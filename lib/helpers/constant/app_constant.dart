@@ -4,11 +4,9 @@ final DateFormat dateFormatter = DateFormat('dd/MM/yyyy');
 final DateFormat timeFormatter = DateFormat('jms');
 
 class AppConstant {
-  // Backend GesBoutik (NestJS). IP locale de la machine qui héberge l'API : nécessaire
-  // pour un test depuis un téléphone physique sur le même réseau Wi-Fi (localhost ne
-  // fonctionnerait pas, il désignerait le téléphone lui-même). À adapter si l'IP change
-  // (ipconfig getifaddr en0 sur macOS) ou pour un émulateur Android (10.0.2.2).
-  static const String baseAPI = 'http://192.168.11.124:3000';
+  // Backend GesBoutik (NestJS), déployé sur Render. Accessible depuis n'importe
+  // quel réseau (plus besoin de l'IP locale de la machine de dev).
+  static const String baseAPI = 'https://gestboutik-es-back.onrender.com';
   static const String baseURl = '$baseAPI/api';
 
   static const String baseURl_ = '$baseAPI/api/public/v1/';
