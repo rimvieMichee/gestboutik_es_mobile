@@ -82,4 +82,11 @@ extension StringLocalization on String {
   String tr() {
     return Translator.translate(this);
   }
+
+  /// Traduit puis remplace les `{nom}` par leurs valeurs (« {n} produits »).
+  String trp(Map<String, String> params) {
+    var text = Translator.translate(this);
+    params.forEach((key, value) => text = text.replaceAll('{$key}', value));
+    return text;
+  }
 }

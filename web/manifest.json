@@ -3,10 +3,10 @@
     "short_name": "foodly_app",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#hexcode",
-    "theme_color": "#hexcode",
+    "background_color": "#1FA45C",
+    "theme_color": "#1FA45C",
     "description": "A new Flutter project.",
-    "orientation": "portrait-pfoodlyary",
+    "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
         {

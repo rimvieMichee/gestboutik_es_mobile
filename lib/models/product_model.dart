@@ -25,6 +25,23 @@ class ProductModel {
     required this.boutiqueId,
   });
 
+  /// Copie avec une nouvelle quantité (mise à jour en direct du stock).
+  ProductModel copyWith({int? quantiteDisponible, String? statut}) {
+    return ProductModel(
+      id: id,
+      nom: nom,
+      description: description,
+      prixVente: prixVente,
+      prixAchat: prixAchat,
+      quantiteDisponible: quantiteDisponible ?? this.quantiteDisponible,
+      seuilAlerte: seuilAlerte,
+      sku: sku,
+      image: image,
+      statut: statut ?? this.statut,
+      boutiqueId: boutiqueId,
+    );
+  }
+
   bool get stockBas => quantiteDisponible <= seuilAlerte;
   bool get enRupture => quantiteDisponible <= 0;
 
@@ -34,8 +51,9 @@ class ProductModel {
       nom: json['nom'] as String,
       description: json['description'] as String?,
       prixVente: double.parse(json['prixVente'].toString()),
-      prixAchat:
-          json['prixAchat'] != null ? double.parse(json['prixAchat'].toString()) : null,
+      prixAchat: json['prixAchat'] != null
+          ? double.parse(json['prixAchat'].toString())
+          : null,
       quantiteDisponible: json['quantiteDisponible'] as int,
       seuilAlerte: json['seuilAlerte'] as int,
       sku: json['sku'] as String?,

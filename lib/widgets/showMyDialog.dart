@@ -1,7 +1,9 @@
-import 'package:foodly/helpers/theme/admin_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:foodly/widgets/gesboutik/gb_sheets.dart';
 
-showMyDialog(
+/// Ancienne fenêtre générique du modèle de départ : elle ouvre désormais une
+/// bottom sheet (plus aucun dialogue dans l'appli).
+void showMyDialog(
   BuildContext context, {
   required Widget content,
   List<Widget>? actions,
@@ -9,28 +11,26 @@ showMyDialog(
   double? borderRadius,
   EdgeInsetsGeometry? contentPadding,
 }) {
-  showDialog<void>(
-    context: context,
-    barrierDismissible: false, // Allow dismissing by tapping outside
-    builder: (BuildContext context) {
-      return AlertDialog(
-        backgroundColor: AdminTheme.theme.contentTheme.kF6F6F6,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(borderRadius ?? 16.0),
-          side: BorderSide(
-            color: AdminTheme.theme.contentTheme
-                .kE6E6E6, // Set your desired border color here
-            width: 1.0, // Optional: Adjust the border width
+  showGbSheet<void>(
+    context,
+    builder: (ctx) => Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (title != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Text(title,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ),
-        ),
-        contentPadding: contentPadding ??
-            EdgeInsets.all(16.0), // Default to 16 if not provided
-        title: title != null ? Text(title) : null,
-        content: SingleChildScrollView(
-          child: content,
-        ),
-        actions: actions,
-      );
-    },
+        Padding(padding: contentPadding ?? EdgeInsets.zero, child: content),
+        if (actions != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 14),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.end, children: actions),
+          ),
+      ],
+    ),
   );
 }

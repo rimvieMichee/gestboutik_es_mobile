@@ -25,6 +25,9 @@ class UserModel {
   final String? boutiqueId;
   final BoutiqueSummary? boutique;
 
+  /// Boutiques que ce gestionnaire peut ouvrir (vide pour les autres rôles).
+  final List<BoutiqueSummary> boutiques;
+
   UserModel({
     required this.id,
     required this.nom,
@@ -33,6 +36,7 @@ class UserModel {
     required this.role,
     this.boutiqueId,
     this.boutique,
+    this.boutiques = const [],
   });
 
   String get nomComplet => '$prenom $nom';
@@ -48,6 +52,9 @@ class UserModel {
       boutique: json['boutique'] != null
           ? BoutiqueSummary.fromJson(json['boutique'] as Map<String, dynamic>)
           : null,
+      boutiques: ((json['boutiques'] as List?) ?? const [])
+          .map((e) => BoutiqueSummary.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 }

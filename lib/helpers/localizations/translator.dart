@@ -9,14 +9,22 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Translator {
   static Map<String, String>? _localizedStrings;
 
+  /// Français : langue de référence, utilisée quand une clé n'est pas traduite.
+  static Map<String, String> _fallback = {};
+
+  static Future<Map<String, String>> _load(String code) async {
+    final jsonString = await rootBundle.loadString('assets/lang/$code.json');
+    final map = json.decode(jsonString) as Map<String, dynamic>;
+    return map.map((key, value) => MapEntry(key, value.toString()));
+  }
+
   static Future<bool> changeLanguage(Language language) async {
     try {
-      String jsonString = await rootBundle
-          .loadString('assets/lang/${language.locale.languageCode}.json');
-      Map<String, dynamic> jsonLanguageMap = json.decode(jsonString);
-      _localizedStrings = jsonLanguageMap.map((key, value) {
-        return MapEntry(key, value.toString());
-      });
+      if (_fallback.isEmpty) {
+        _fallback = await _load('fr');
+      }
+      final code = language.locale.languageCode;
+      _localizedStrings = code == 'fr' ? _fallback : await _load(code);
       return true;
     } catch (e) {
       log(e.toString());
@@ -26,12 +34,7 @@ class Translator {
 
   // called from every screens which needs a localized text
   static String translate(String text) {
-    if (_localizedStrings != null) {
-      String? value = _localizedStrings![text];
-      return value ?? autoTranslate(text);
-    }
-
-    return autoTranslate(text);
+    return _localizedStrings?[text] ?? _fallback[text] ?? autoTranslate(text);
   }
 
   static String autoTranslate(String text) {

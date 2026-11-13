@@ -1,238 +1,129 @@
-import 'package:get/get_utils/src/platform/platform.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart' hide Trans;
+import 'package:lucide_icons/lucide_icons.dart';
+import 'package:provider/provider.dart';
 import 'package:foodly/controller/apps/settings/settings_controller.dart';
 import 'package:foodly/helpers/extensions/string.dart';
 import 'package:foodly/helpers/localizations/language.dart';
-import 'package:foodly/helpers/my_widgets/my_spacing.dart';
-import 'package:foodly/helpers/my_widgets/my_text.dart';
 import 'package:foodly/helpers/storage/local_storage.dart';
-import 'package:foodly/helpers/theme/admin_theme.dart';
 import 'package:foodly/helpers/theme/app_notifier.dart';
-import 'package:foodly/helpers/utils/ui_mixins.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/src/extension_instance.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-import 'package:get/get_utils/src/extensions/widget_extensions.dart';
-import 'package:lucide_icons/lucide_icons.dart';
-import 'package:provider/provider.dart';
+import 'package:foodly/helpers/theme/app_theme.dart';
+import 'package:foodly/widgets/gesboutik/gb_app_bar.dart';
+import 'package:foodly/widgets/gesboutik/gb_colors.dart';
 
-class SelectLanguageScreen extends StatefulWidget {
+/// Choix de la langue (Français / Mooré). S'ouvre par-dessus les Paramètres ;
+/// le bouton retour (barre ou geste système) revient simplement à l'écran précédent.
+class SelectLanguageScreen extends StatelessWidget {
   const SelectLanguageScreen({super.key});
 
   @override
-  State<SelectLanguageScreen> createState() => _SelectLanguageScreenState();
+  Widget build(BuildContext context) {
+    final controller = Get.put(SettingsController());
+    final primary = AppTheme.theme.colorScheme.primary;
+
+    return Consumer<AppNotifier>(
+      builder: (context, notifier, _) {
+        final c = context.gb;
+        return Scaffold(
+          backgroundColor: c.background,
+          appBar: gbAppBar(title: 'language'.tr()),
+          body: ListView(
+            padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 24.h),
+            children: [
+              Obx(
+                () => Container(
+                  decoration: BoxDecoration(
+                    color: c.surface,
+                    borderRadius: BorderRadius.circular(16.r),
+                    border: c.isDark ? Border.all(color: c.border) : null,
+                    boxShadow: c.shadow,
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    children: [
+                      for (var i = 0; i < Language.languages.length; i++) ...[
+                        if (i > 0)
+                          Divider(
+                              height: 1,
+                              indent: 16.w,
+                              endIndent: 16.w,
+                              color: c.border),
+                        _LanguageTile(
+                          name: Language.languages[i].languageName,
+                          selected: controller.selectedLanguageIndex.value == i,
+                          onTap: () async {
+                            final language = Language.languages[i];
+                            controller.selectedLanguageIndex.value = i;
+                            await LocalStorage.setLanguage(language);
+                            await notifier.changeLanguage(language);
+                          },
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 14.h),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(LucideIcons.info, size: 16.sp, color: primary),
+                  SizedBox(width: 8.w),
+                  Expanded(
+                    child: Text(
+                      'language_hint'.tr(),
+                      style: TextStyle(
+                          fontSize: 12.sp, color: c.subtext, height: 1.4),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }
 
-class _SelectLanguageScreenState extends State<SelectLanguageScreen>
-    with SingleTickerProviderStateMixin, UIMixin {
-  final controller = Get.put(SettingsController());
+class _LanguageTile extends StatelessWidget {
+  final String name;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _LanguageTile(
+      {required this.name, required this.selected, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: true,
-      child: Consumer<AppNotifier>(
-        builder: (_, appNotifier, child) => Scaffold(
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GetPlatform.isIOS ? 70.verticalSpace : 60.verticalSpace,
-              Row(
-                children: [
-                  InkWell(
-                    onTap: () {
-                      Get.offNamed("/HomeScreen");
-                    },
-                    child: Icon(
-                      LucideIcons.arrowLeft,
-                      size: 24.sp,
-                    ),
-                  ),
-                  MySpacing.width(15),
-                  MyText.titleMedium(
-                    "language".tr(),
-                    fontWeight: 600,
-                    fontSize: 24.sp,
-                    color: contentTheme.black,
-                  )
-                ],
-              ),
-              60.verticalSpace,
-              Expanded(
-                child: Obx(
-                  () => ListView.separated(
-                    padding: EdgeInsets.symmetric(horizontal: 15.w),
-                    shrinkWrap: true,
-                    itemCount: controller.languageList.length,
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                        onTap: () async {
-                          await controller.selectLanguage(index);
-                          LocalStorage.setLanguage(Language.languages[index]);
-                          appNotifier.changeLanguage(
-                              Language.languages[index]); // Pass the Locale
-                        },
-                        child: Row(
-                          children: [
-                            MyText.titleMedium(
-                              controller.languageList[
-                                  index], // This is already .tr() in controller
-                              fontSize: 20.sp,
-                              fontWeight: 500,
-                              color: AdminTheme.theme.contentTheme.black,
-                            ),
-                            const Spacer(),
-                            SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: Obx(
-                                () => Radio<int>(
-                                  // Type is int (the index)
-                                  value: index, // The current item's index
-                                  activeColor: contentTheme.primary,
-                                  groupValue: controller.selectedLanguageIndex
-                                      .value, // The selected index
-                                  fillColor:
-                                      WidgetStateProperty.resolveWith<Color>(
-                                    (Set<WidgetState> states) {
-                                      if (states
-                                          .contains(WidgetState.selected)) {
-                                        return contentTheme
-                                            .black; // Color for the selected dot
-                                      }
-                                      return contentTheme.kCECECE;
-                                    },
-                                  ),
-                                  onChanged: (int? value) async {
-                                    if (value != null) {
-                                      controller.selectLanguage(index);
-                                      LocalStorage.setLanguage(
-                                          Language.languages[index]);
-                                      appNotifier.changeLanguage(Language
-                                          .languages[value]); // Pass the Locale
-                                    }
-                                  },
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ).paddingOnly(bottom: 15);
-                    },
-                    separatorBuilder: (context, index) => 3.verticalSpace,
-                  ),
+    final c = context.gb;
+    final primary = AppTheme.theme.colorScheme.primary;
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                name,
+                style: TextStyle(
+                  fontSize: 15.sp,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  color: selected ? primary : c.text,
                 ),
-              )
-            ],
-          ).paddingSymmetric(horizontal: 20.w),
+              ),
+            ),
+            AnimatedOpacity(
+              duration: const Duration(milliseconds: 150),
+              opacity: selected ? 1 : 0,
+              child:
+                  Icon(LucideIcons.checkCircle2, size: 22.sp, color: primary),
+            ),
+          ],
         ),
       ),
     );
   }
 }
-// class SelectLanguageScreen extends StatefulWidget {
-//   const SelectLanguageScreen({super.key});
-//
-//   @override
-//   State<SelectLanguageScreen> createState() => _SelectLanguageScreenState();
-// }
-
-// class _SelectLanguageScreenState extends State<SelectLanguageScreen>
-//     with SingleTickerProviderStateMixin, UIMixin {
-//   final controller = Get.put(SettingsController());
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return PopScope(
-//       canPop: true,
-//       child: Consumer<AppNotifier>(
-//         builder: (_, appNotifier, child) => Scaffold(
-//           body: Column(
-//             mainAxisAlignment: MainAxisAlignment.start,
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               GetPlatform.isIOS ? 70.verticalSpace : 60.verticalSpace,
-//               Row(
-//                 children: [
-//                   InkWell(
-//                     onTap: () {
-//                       Get.offNamed("/settingScreen");
-//                     },
-//                     child: Icon(
-//                       LucideIcons.arrowLeft,
-//                       size: 24.sp,
-//                     ),
-//                   ),
-//                   MySpacing.width(15),
-//                   MyText.titleMedium(
-//                     "language".tr(),
-//                     fontWeight: 600,
-//                     fontSize: 24.sp,
-//                     color: contentTheme.black,
-//                   )
-//                 ],
-//               ),
-//               60.verticalSpace,
-//               Expanded(
-//                 child: Obx(
-//                       () => ListView.separated(
-//                     padding: EdgeInsets.symmetric(horizontal: 15.w),
-//                     shrinkWrap: true,
-//                     itemBuilder: (context, index) => InkWell(
-//                       onTap: () async {
-//                         controller.selectedLanguage(controller.languageList[index]);
-//                         LocalStorage.setLanguage(Language.languages[index]);
-//                         appNotifier.changeLanguage(Language.languages[index]);
-//                       },
-//                       child: Row(
-//                         children: [
-//                           MyText.titleMedium(
-//                             controller.languageList[index].tr(),
-//                             fontSize: 20.sp,
-//                             fontWeight: 500,
-//                             color: AdminTheme.theme.contentTheme.black,
-//                           ),
-//                           const Spacer(),
-//                           SizedBox(
-//                             width: 20,
-//                             height: 20,
-//                             child: Obx(
-//                                   () => Radio(
-//                                 value: controller.languageList[index],
-//                                 activeColor: contentTheme.primary,
-//                                 groupValue: controller.selectedLanguage.value,
-//                                 fillColor:
-//                                 MaterialStateProperty.resolveWith<Color>(
-//                                       (Set<MaterialState> states) {
-//                                     if (states.contains(MaterialState.selected)) {
-//                                       return contentTheme.black;
-//                                     }
-//                                     return contentTheme.kCECECE;
-//                                   },
-//                                 ),
-//                                 onChanged: (value) async {
-//                                   controller.selectedLanguage(value as String);
-//                                   LocalStorage.setLanguage(Language.languages[controller.languageList.indexOf(value)]);
-//                                   appNotifier.changeLanguage(Language.languages[controller.languageList.indexOf(value)]);
-//                                 },
-//                               ),
-//                             ),
-//                           )
-//                         ],
-//                       ),
-//                     ).paddingOnly(bottom: 15),
-//                     separatorBuilder: (context, index) => 3.verticalSpace,
-//                     itemCount: controller.languageList.length,
-//                   ),
-//                 ),
-//               )
-//             ],
-//           ).paddingSymmetric(horizontal: 20.w),
-//         ),
-//       ),
-//     );
-//   }
-// }

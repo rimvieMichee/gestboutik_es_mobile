@@ -168,7 +168,7 @@ class _TextInputFieldsState extends State<TextInputFields>
                     borderRadius: BorderRadius.circular(10.r),
                     borderSide: BorderSide(
                       width: 1.w,
-                      color: LocalStorage.getTheme() == "Dark"
+                      color: LocalStorage.isDarkMode
                           ? widget.borderColor ?? contentTheme.primary
                           : widget.borderColor ?? contentTheme.k005EA2,
                     ),

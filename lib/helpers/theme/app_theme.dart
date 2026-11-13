@@ -281,7 +281,7 @@ class AppTheme {
     brightness: Brightness.light,
 
     /// Primary Color
-    primaryColor: Color(0xff3C4EC5),
+    primaryColor: Color(0xff17884B),
     scaffoldBackgroundColor: Color(0xffffffff),
     canvasColor: Colors.transparent,
 
@@ -387,7 +387,8 @@ class AppTheme {
     indicatorColor: Color(0xffeeeeee),
     highlightColor: Color(0xffeeeeee),
     colorScheme: ColorScheme.fromSeed(
-            seedColor: Color(0xff3C4EC5), brightness: Brightness.light)
+            seedColor: Color(0xff1FA45C), brightness: Brightness.light)
+        .copyWith(primary: Color(0xff17884B), onPrimary: Colors.white)
         .copyWith(background: Color(0xffffffff))
         .copyWith(error: Color(0xfff0323c)),
   );
@@ -398,7 +399,7 @@ class AppTheme {
     brightness: Brightness.dark,
 
     /// Primary Color
-    primaryColor: Color(0xff069DEF),
+    primaryColor: Color(0xff3DCB82),
 
     /// Scaffold and Background color
     scaffoldBackgroundColor: Color(0xff161616),
@@ -505,7 +506,8 @@ class AppTheme {
     highlightColor: Colors.white.withAlpha(28),
     splashColor: Colors.white.withAlpha(56),
     colorScheme: ColorScheme.fromSeed(
-            seedColor: Color(0xff069DEF), brightness: Brightness.dark)
+            seedColor: Color(0xff1FA45C), brightness: Brightness.dark)
+        .copyWith(primary: Color(0xff3DCB82), onPrimary: Color(0xff04210F))
         .copyWith(background: Color(0xff161616))
         .copyWith(error: Colors.orange),
   );

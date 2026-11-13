@@ -11,8 +11,6 @@ class Language {
   static List<Language> languages = [
     Language(Locale('fr'), "Français"),
     Language(Locale('en'), "English"),
-    Language(Locale('mos'), "Mòoré"),
-    Language(Locale('dyu'), "Jula"),
   ];
 
   Language(this.locale, this.languageName, [this.supportRTL = false]);

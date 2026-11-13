@@ -1,10 +1,14 @@
+import 'package:foodly/helpers/extensions/string.dart';
 import 'package:flutter/material.dart';
+import 'package:foodly/widgets/gesboutik/gb_colors.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Trans;
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:foodly/helpers/theme/app_theme.dart';
 import 'package:foodly/models/sale_model.dart';
-import 'package:foodly/views/apps/sales/new_sale_screen.dart';
+import 'package:foodly/controller/apps/dashboard/dashboard_controller.dart';
+import 'package:foodly/controller/apps/sales/new_sale_controller.dart';
+import 'package:foodly/controller/layouts/main_shell_controller.dart';
 
 class SaleConfirmationScreen extends StatefulWidget {
   final SaleModel sale;
@@ -45,10 +49,26 @@ class _SaleConfirmationScreenState extends State<SaleConfirmationScreen>
     super.dispose();
   }
 
+  /// Referme la confirmation et revient à l'onglet voulu (1 = Vente, 0 = Accueil),
+  /// en rafraîchissant le stock et les chiffres modifiés par la vente.
+  void _backToShell({required int tab}) {
+    Navigator.of(context).pop();
+    if (Get.isRegistered<MainShellController>()) {
+      Get.find<MainShellController>().changeTab(tab);
+    }
+    if (Get.isRegistered<NewSaleController>()) {
+      Get.find<NewSaleController>().loadProducts();
+    }
+    if (Get.isRegistered<DashboardController>()) {
+      Get.find<DashboardController>().loadDashboard();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final sale = widget.sale;
     return Scaffold(
+      backgroundColor: context.gb.background,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(24.w),
@@ -60,8 +80,10 @@ class _SaleConfirmationScreenState extends State<SaleConfirmationScreen>
                 child: Container(
                   width: 96.w,
                   height: 96.w,
-                  decoration: const BoxDecoration(color: Color(0xFFDCFCE7), shape: BoxShape.circle),
-                  child: Icon(LucideIcons.check, color: const Color(0xFF16A34A), size: 48.sp),
+                  decoration: const BoxDecoration(
+                      color: Color(0xFFDCFCE7), shape: BoxShape.circle),
+                  child: Icon(LucideIcons.check,
+                      color: const Color(0xFF16A34A), size: 48.sp),
                 ),
               ),
               SizedBox(height: 24.h),
@@ -70,14 +92,35 @@ class _SaleConfirmationScreenState extends State<SaleConfirmationScreen>
                 child: Column(
                   children: [
                     Text(
-                      'Vente enregistrée !',
-                      style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.bold),
+                      'sale_saved'.tr(),
+                      style: TextStyle(
+                          fontSize: 22.sp, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 8.h),
                     Text(
                       sale.numeroVente,
-                      style: TextStyle(fontSize: 15.sp, color: Colors.grey[600]),
+                      style:
+                          TextStyle(fontSize: 15.sp, color: context.gb.subtext),
                     ),
+                    if (sale.isCredit) ...[
+                      SizedBox(height: 10.h),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 12.w, vertical: 6.h),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withOpacity(0.14),
+                          borderRadius: BorderRadius.circular(20.r),
+                        ),
+                        child: Text(
+                          'credit_borrower'
+                              .trp({'name': sale.clientNom ?? '—'}),
+                          style: TextStyle(
+                              fontSize: 12.5.sp,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.orange),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -85,15 +128,16 @@ class _SaleConfirmationScreenState extends State<SaleConfirmationScreen>
               FadeTransition(
                 opacity: _contentFade,
                 child: SlideTransition(
-                  position: Tween<Offset>(begin: const Offset(0, 0.08), end: Offset.zero)
+                  position: Tween<Offset>(
+                          begin: const Offset(0, 0.08), end: Offset.zero)
                       .animate(_contentFade),
                   child: Container(
                     width: double.infinity,
                     padding: EdgeInsets.all(16.w),
                     decoration: BoxDecoration(
-                      color: Colors.grey[50],
+                      color: context.gb.fill,
                       borderRadius: BorderRadius.circular(14.r),
-                      border: Border.all(color: Colors.grey[200]!),
+                      border: Border.all(color: context.gb.skeleton),
                     ),
                     child: Column(
                       children: [
@@ -110,7 +154,8 @@ class _SaleConfirmationScreenState extends State<SaleConfirmationScreen>
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                Text('${item.sousTotal.toInt()} FCFA', style: TextStyle(fontSize: 13.sp)),
+                                Text('${item.sousTotal.toInt()} FCFA',
+                                    style: TextStyle(fontSize: 13.sp)),
                               ],
                             ),
                           ),
@@ -119,7 +164,10 @@ class _SaleConfirmationScreenState extends State<SaleConfirmationScreen>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Total', style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold)),
+                            Text('total'.tr(),
+                                style: TextStyle(
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.bold)),
                             Text(
                               '${sale.montantTotal.toInt()} FCFA',
                               style: TextStyle(
@@ -144,14 +192,18 @@ class _SaleConfirmationScreenState extends State<SaleConfirmationScreen>
                       width: double.infinity,
                       height: 52.h,
                       child: ElevatedButton(
-                        onPressed: () => Get.off(() => const NewSaleScreen()),
+                        onPressed: () => _backToShell(tab: 1),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppTheme.theme.colorScheme.primary,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.r)),
                         ),
                         child: Text(
-                          'Nouvelle vente',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15.sp),
+                          'new_sale'.tr(),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15.sp),
                         ),
                       ),
                     ),
@@ -160,8 +212,9 @@ class _SaleConfirmationScreenState extends State<SaleConfirmationScreen>
                       width: double.infinity,
                       height: 52.h,
                       child: OutlinedButton(
-                        onPressed: () => Get.offAllNamed('/dashboard'),
-                        child: Text('Retour au tableau de bord', style: TextStyle(fontSize: 15.sp)),
+                        onPressed: () => _backToShell(tab: 0),
+                        child: Text('back_home'.tr(),
+                            style: TextStyle(fontSize: 15.sp)),
                       ),
                     ),
                   ],

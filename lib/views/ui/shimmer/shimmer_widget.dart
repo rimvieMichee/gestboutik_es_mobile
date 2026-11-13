@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 
 class ShimmerWidget extends StatefulWidget {
   final Widget child;
-  final Color baseColor;
-  final Color highlightColor;
+  final Color? baseColor;
+  final Color? highlightColor;
   final Duration period;
 
   const ShimmerWidget({
     Key? key,
     required this.child,
-    this.baseColor = const Color(0xFFE0E0E0),
-    this.highlightColor = const Color(0xFFF5F5F5),
+    this.baseColor,
+    this.highlightColor,
     this.period = const Duration(milliseconds: 1500),
   }) : super(key: key);
 
@@ -22,6 +22,17 @@ class _ShimmerWidgetState extends State<ShimmerWidget>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
+
+  bool _dark(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark;
+
+  Color _base(BuildContext context) =>
+      widget.baseColor ??
+      (_dark(context) ? const Color(0xFF2B2D31) : const Color(0xFFE0E0E0));
+
+  Color _highlight(BuildContext context) =>
+      widget.highlightColor ??
+      (_dark(context) ? const Color(0xFF3A3D42) : const Color(0xFFF5F5F5));
 
   @override
   void initState() {
@@ -57,9 +68,9 @@ class _ShimmerWidgetState extends State<ShimmerWidget>
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
               colors: [
-                widget.baseColor,
-                widget.highlightColor,
-                widget.baseColor,
+                _base(context),
+                _highlight(context),
+                _base(context),
               ],
               stops: [
                 0.0,

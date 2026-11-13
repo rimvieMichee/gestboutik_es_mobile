@@ -10,7 +10,13 @@ class LocalNotification {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
+  /// `--dart-define=SKIP_NOTIFICATION_PROMPT=true` : pas de demande
+  /// d'autorisation au démarrage (tournage, tests automatisés). Sans effet par défaut.
+  static const bool _skipPrompt =
+      bool.fromEnvironment('SKIP_NOTIFICATION_PROMPT');
+
   Future<void> initialize() async {
+    if (_skipPrompt) return;
     if (Platform.isIOS) {
       await flutterLocalNotificationsPlugin
           .resolvePlatformSpecificImplementation<

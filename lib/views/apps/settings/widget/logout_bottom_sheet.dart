@@ -1,93 +1,93 @@
-import 'package:foodly/helpers/extensions/string.dart';
-import 'package:foodly/helpers/my_widgets/my_button.dart';
-import 'package:foodly/helpers/my_widgets/my_spacing.dart';
-import 'package:foodly/helpers/utils/ui_mixins.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../../../helpers/my_widgets/my_text.dart';
+import 'package:foodly/helpers/extensions/string.dart';
+import 'package:foodly/widgets/gesboutik/gb_colors.dart';
 
-class LogoutDeleteBottomSheet extends StatelessWidget with UIMixin {
+/// Confirmation de déconnexion (feuille modale). Renvoie `true` si confirmé.
+class LogoutDeleteBottomSheet extends StatelessWidget {
   final String title;
   final String subTitle;
 
-  LogoutDeleteBottomSheet({
-    Key? key,
+  const LogoutDeleteBottomSheet({
+    super.key,
     required this.title,
     required this.subTitle,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
+    final c = context.gb;
     return Container(
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 24.h),
-        decoration: BoxDecoration(
-          color: contentTheme.bottomBarColor,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20.r),
-            topRight: Radius.circular(20.r),
+      padding: EdgeInsets.fromLTRB(
+          20.w, 12.h, 20.w, 24.h + MediaQuery.of(context).padding.bottom),
+      decoration: BoxDecoration(
+        color: c.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(26.r)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Center(
+            child: Container(
+              width: 40.w,
+              height: 4.h,
+              decoration: BoxDecoration(
+                color: c.border,
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+            ),
           ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            16.verticalSpace,
-            MyText.titleMedium(
-              title,
-              fontWeight: 700,
-              fontSize: 16.sp,
-              color: contentTheme.black,
-              textAlign: TextAlign.center,
-            ),
-            8.verticalSpace,
-            MyText.titleMedium(
-              subTitle,
-              fontWeight: 400,
-              fontSize: 14.sp,
-              color: contentTheme.black,
-              textAlign: TextAlign.center,
-            ),
-            24.verticalSpace,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: MyButton.outlined(
-                    block: true,
-                    backgroundColor: contentTheme.onPrimary,
-                    borderColor: contentTheme.onPrimary,
-                    onPressed: () => Navigator.of(context).pop(false),
-                    elevation: 1,
-                    borderRadiusAll: 20,
-                    padding: MySpacing.xy(20, 13),
-                    child: MyText.bodyLarge(
-                      'no'.tr(),
-                      fontWeight: 700,
-                      fontSize: 14.sp,
-                      color: contentTheme.onPrimary,
-                    ),
+          SizedBox(height: 20.h),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: 17.sp, fontWeight: FontWeight.w700, color: c.text),
+          ),
+          SizedBox(height: 8.h),
+          Text(
+            subTitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 13.5.sp, color: c.subtext),
+          ),
+          SizedBox(height: 24.h),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: c.text,
+                    side: BorderSide(color: c.border),
+                    padding: EdgeInsets.symmetric(vertical: 14.h),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14.r)),
                   ),
+                  child: Text('no'.tr(),
+                      style: TextStyle(
+                          fontSize: 14.sp, fontWeight: FontWeight.w600)),
                 ),
-                16.horizontalSpace,
-                Expanded(
-                  child: MyButton.rounded(
-                    onPressed: () => Navigator.of(context).pop(true),
-                    block: true,
-                    elevation: 2,
-                    borderRadiusAll: 20,
-                    padding: MySpacing.xy(20, 20),
-                    backgroundColor: contentTheme.primary,
-                    child: MyText.bodyLarge(
-                      'yes'.tr(),
-                      fontWeight: 700,
-                      fontSize: 14.sp,
-                      color: contentTheme.white,
-                    ),
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: FilledButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    padding: EdgeInsets.symmetric(vertical: 14.h),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14.r)),
                   ),
+                  child: Text('yes'.tr(),
+                      style: TextStyle(
+                          fontSize: 14.sp, fontWeight: FontWeight.w700)),
                 ),
-              ],
-            ),
-          ],
-        ));
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }

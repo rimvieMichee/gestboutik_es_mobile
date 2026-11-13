@@ -61,6 +61,11 @@ dependencies:
   flutter_launcher_icons: ^0.14.3
   fluttertoast: ^8.2.4
   pretty_dio_logger: ^1.4.0
+  pdf: ^3.11.3
+  printing: ^5.14.3
+  socket_io_client: ^3.1.6
+  local_auth: ^2.3.0
+  flutter_secure_storage: ^9.2.4
 
 
 dev_dependencies:
@@ -78,39 +83,44 @@ dev_dependencies:
 
 
 flutter_native_splash:
-  color: "#ffffff"
-  color_dark: "#ffffff"
-  image: assets/images/logo/login.png
+  color: "#1FA45C"
+  color_dark: "#10231A"
+  image: assets/images/logo/selio_splash.png
+  image_dark: assets/images/logo/selio_splash.png
 
   android: true
   ios: true
   ios_content_mode: scaleAspectFit
-  web: false          # ou true si tu veux aussi un splash web
+  web: false
 
   android_12:
-    image: assets/images/logo/login.png
-    icon_background_color: "#ffffff"  # recommandé pour Android 12
-    fullscreen: true                  # optionnel mais évite certains bugs
-
-
+    image: assets/images/logo/selio_splash.png
+    icon_background_color: "#1FA45C"
+    image_dark: assets/images/logo/selio_splash.png
+    icon_background_color_dark: "#10231A"
+    fullscreen: true
 
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/logo/login.png"
-  min_sdk_android: 21 # android min sdk min:16, default 21
+  image_path: "assets/images/logo/selio_icon.png"
+  remove_alpha_ios: true
+  min_sdk_android: 21
+  adaptive_icon_background: "#1FA45C"
+  adaptive_icon_foreground: "assets/images/logo/selio_foreground.png"
+  adaptive_icon_monochrome: "assets/images/logo/selio_foreground.png"
   web:
     generate: true
-    image_path: "assets/images/logo/login.png"
-    background_color: "#hexcode"
-    theme_color: "#hexcode"
+    image_path: "assets/images/logo/selio_icon.png"
+    background_color: "#1FA45C"
+    theme_color: "#1FA45C"
   windows:
     generate: true
-    image_path: "assets/images/logo/login.png"
-    icon_size: 48 # min:48, max:256, default: 48
+    image_path: "assets/images/logo/selio_icon.png"
+    icon_size: 48
   macos:
     generate: true
-    image_path: "assets/images/logo/login.png"
+    image_path: "assets/images/logo/selio_icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

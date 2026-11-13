@@ -548,7 +548,7 @@ class AdminTheme {
             MediaQuery.of(context).platformBrightness == Brightness.dark
                 ? RightBarTheme.darkRightBarTheme
                 : RightBarTheme.lightRightBarTheme,
-        contentTheme: LocalStorage.getTheme() == "Dark"
+        contentTheme: LocalStorage.isDarkMode
             ? ContentTheme.darkContentTheme
             : ContentTheme.lightContentTheme);
   }

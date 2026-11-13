@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:foodly/helpers/localizations/language.dart';
 import 'package:foodly/helpers/services/auth_services.dart';
@@ -31,6 +31,10 @@ class LocalStorage {
   static const String _userRole = "user_role";
   static const String _boutiqueId = "boutique_id";
   static const String _boutiqueName = "boutique_name";
+  static const String _biometricEnabled = "biometric_login_enabled";
+  static const String _lastUsername = "last_username";
+  static const String _shopCount = "shop_count";
+  static const String _lastDisplayName = "last_display_name";
 
   static const String _languageIndexKey =
       'app_language_index'; // New key for index
@@ -81,6 +85,10 @@ class LocalStorage {
   static Future<bool> setLanguage(Language language) {
     return preferences.setString(_languageKey, language.locale.languageCode);
   }
+
+  /// Locale `intl` (noms de mois, jours…) alignée sur la langue de l'appli.
+  static String get dateLocale =>
+      _preferencesInstance?.getString(_languageKey) == 'en' ? 'en_US' : 'fr_FR';
 
   static String? getLanguage() {
     return preferences.getString(_languageKey);
@@ -168,6 +176,41 @@ class LocalStorage {
     return preferences.getString(_theme);
   }
 
+  /// Choix d'apparence de l'utilisateur : Système / Clair / Sombre.
+  /// Par défaut « Clair » tant qu'aucun choix n'a été fait.
+  static ThemeMode getThemeMode() {
+    switch (getTheme()) {
+      case 'Dark':
+        return ThemeMode.dark;
+      case 'System':
+        return ThemeMode.system;
+      default:
+        return ThemeMode.light;
+    }
+  }
+
+  static Future<bool> setThemeMode(ThemeMode mode) {
+    final value = switch (mode) {
+      ThemeMode.dark => 'Dark',
+      ThemeMode.system => 'System',
+      ThemeMode.light => 'Light',
+    };
+    return setTheme(value);
+  }
+
+  /// `true` si l'interface est actuellement sombre (en mode Système, selon l'appareil).
+  static bool get isDarkMode {
+    switch (getThemeMode()) {
+      case ThemeMode.dark:
+        return true;
+      case ThemeMode.light:
+        return false;
+      case ThemeMode.system:
+        return WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+            Brightness.dark;
+    }
+  }
+
   static Future<bool> setAppLink(bool setValue) {
     return preferences.setBool(_setAppLink, setValue);
   }
@@ -232,6 +275,16 @@ class LocalStorage {
     return preferences.getString(_userRole);
   }
 
+  /// Nombre de boutiques que le gestionnaire connecté peut ouvrir.
+  static Future<bool> setShopCount(int count) {
+    return preferences.setInt(_shopCount, count);
+  }
+
+  static int getShopCount() => preferences.getInt(_shopCount) ?? 0;
+
+  /// Vrai si le gestionnaire gère plusieurs boutiques (sélecteur affiché).
+  static bool get isMultiShop => getShopCount() > 1;
+
   static Future<bool> setBoutiqueId(String boutiqueId) {
     return preferences.setString(_boutiqueId, boutiqueId);
   }
@@ -264,6 +317,31 @@ class LocalStorage {
     return preferences.getString(_lastName);
   }
 
+  /// Connexion par empreinte / Face ID activée dans les paramètres. Les
+  /// identifiants eux-mêmes sont dans le stockage sécurisé (BiometricService).
+  static Future<bool> setBiometricEnabled(bool value) {
+    return preferences.setBool(_biometricEnabled, value);
+  }
+
+  static bool getBiometricEnabled() {
+    return preferences.getBool(_biometricEnabled) ?? false;
+  }
+
+  /// Dernier compte connecté : conservé après la déconnexion pour proposer
+  /// « Bon retour, … » sur la page de connexion. Jamais le mot de passe.
+  static Future<void> setLastAccount(String username, String displayName) async {
+    await preferences.setString(_lastUsername, username);
+    await preferences.setString(_lastDisplayName, displayName);
+  }
+
+  static String? getLastUsername() => preferences.getString(_lastUsername);
+  static String? getLastDisplayName() => preferences.getString(_lastDisplayName);
+
+  static Future<void> clearLastAccount() async {
+    await preferences.remove(_lastUsername);
+    await preferences.remove(_lastDisplayName);
+  }
+
   static Future<void> removeLoggedInUser() async {
     preferences.remove(_loggedInUserKey);
     preferences.remove(_userIDKey);
@@ -272,6 +350,7 @@ class LocalStorage {
     preferences.remove(_userRole);
     preferences.remove(_boutiqueId);
     preferences.remove(_boutiqueName);
+    preferences.remove(_shopCount);
     preferences.remove(_userNameKey);
     preferences.remove(_firstName);
     preferences.remove(_lastName);

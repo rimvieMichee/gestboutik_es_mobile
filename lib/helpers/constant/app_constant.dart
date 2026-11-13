@@ -6,7 +6,9 @@ final DateFormat timeFormatter = DateFormat('jms');
 class AppConstant {
   // Backend GesBoutik (NestJS), déployé sur Render. Accessible depuis n'importe
   // quel réseau (plus besoin de l'IP locale de la machine de dev).
-  static const String baseAPI = 'https://gestboutik-es-back.onrender.com';
+  // `--dart-define=API_BASE=http://127.0.0.1:3999` pour viser un serveur local.
+  static const String baseAPI = String.fromEnvironment('API_BASE',
+      defaultValue: 'https://gestboutik-es-back.onrender.com');
   static const String baseURl = '$baseAPI/api';
 
   static const String baseURl_ = '$baseAPI/api/public/v1/';
@@ -101,6 +103,7 @@ class AppConstant {
   ///////////////////////////////////////////////////////////////////////
 
   static const String tickets = 'tickets';
+
   static const String users = "users";
 
   ///enumerations
@@ -111,17 +114,23 @@ class AppConstant {
 
   ///password
   static const String logged = "logged";
+
   static const String password = "password";
+
   static const String requestPasswordReset = "request-password-reset";
 
   ///authentication
   static const String validate = "validate";
+
   static const String resendValidationCode = "resend-validation-code";
 
   ///registration
   static const String register = 'register';
+
   static const String adminRegister = 'admin-register';
+
   static const String verificationCode = "verification-code";
+
   static const String availability = 'availability';
 
   ///tokens
@@ -129,6 +138,7 @@ class AppConstant {
 
   ///e-vehicle
   static const String electricVehicles = 'electric-vehicles';
+
   static const String customers = 'customers';
 
   ///home
@@ -195,5 +205,6 @@ class AppConstant {
   static const String services = 'services';
 
   static const String swapStations = 'swap-stations';
+
   static const String swapProcess = 'swap-process';
 }

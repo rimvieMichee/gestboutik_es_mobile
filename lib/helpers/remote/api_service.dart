@@ -3,6 +3,7 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:foodly/helpers/logger/logger.dart';
 import 'package:foodly/helpers/storage/local_storage.dart';
 import 'package:flutter/foundation.dart';
+import 'package:foodly/helpers/services/realtime_service.dart';
 
 dynamic CURR_STATION = null;
 dynamic CURR_BIKE, CURR_TRANSACTION;
@@ -17,6 +18,47 @@ InterceptorsWrapper addAuthToken({String authTokenHeader = 'Authorization'}) =>
         handler.next(options); //continue
       },
     );
+
+/// Renouvelle l'access token (15 min) avec le refresh token quand une requête
+/// reçoit un 401, puis rejoue la requête : l'utilisateur ne voit rien tant que
+/// le refresh token (plusieurs jours) est valide. Un seul renouvellement à la
+/// fois : le serveur révoque le refresh token à chaque usage, donc deux appels
+/// simultanés feraient échouer le second.
+class _TokenRefresher {
+  static Future<void>? _inFlight;
+
+  /// Lance (ou rejoint) un renouvellement. Lève [DioException] en cas d'échec.
+  static Future<void> refresh(Dio dio, String baseUrl) {
+    return _inFlight ??= _doRefresh(dio, baseUrl).whenComplete(() {
+      _inFlight = null;
+    });
+  }
+
+  static Future<void> _doRefresh(Dio dio, String baseUrl) async {
+    final refreshToken = LocalStorage.getRefreshToken();
+    if (refreshToken == null || refreshToken.isEmpty) {
+      throw DioException(
+        requestOptions: RequestOptions(path: '/auth/refresh'),
+        type: DioExceptionType.badResponse,
+        response: Response(
+            requestOptions: RequestOptions(path: '/auth/refresh'),
+            statusCode: 401),
+      );
+    }
+    final response = await dio.post<Map<String, dynamic>>(
+      '$baseUrl/auth/refresh',
+      data: {'refreshToken': refreshToken},
+      options: Options(headers: {'Content-Type': 'application/json'}),
+    );
+    final data = response.data!;
+    await LocalStorage.setAuthToken(data['accessToken'] as String);
+    await LocalStorage.setRefreshToken(data['refreshToken'] as String);
+    // Le flux en direct avait pu être coupé par le jeton expiré.
+    if (!RealtimeService.instance.connected.value) {
+      RealtimeService.instance.connect();
+    }
+  }
+}
 
 /// Dio interceptor to encrypt the request body
 InterceptorsWrapper encryptBody() => InterceptorsWrapper(
@@ -80,6 +122,29 @@ class APIService {
       });
     }*/
     _dio.interceptors.add(addAuthToken(authTokenHeader: authHeader));
+    _dio.interceptors.add(InterceptorsWrapper(
+      onError: (DioException e, ErrorInterceptorHandler handler) async {
+        final request = e.requestOptions;
+        if (e.response?.statusCode != 401 || request.extra['retried'] == true) {
+          return handler.next(e);
+        }
+        try {
+          await _TokenRefresher.refresh(_dioWithoutAuth, _baseUrl);
+        } on DioException catch (refreshError) {
+          // Refresh refusé (expiré, compte désactivé) : le 401 ramène à la
+          // connexion avec le message du serveur. Sans réseau : erreur réseau,
+          // sans déconnecter.
+          return handler.next(refreshError);
+        }
+        try {
+          request.extra['retried'] = true;
+          request.headers[authHeader] = 'Bearer ${LocalStorage.getAuthToken()}';
+          handler.resolve(await _dio.fetch<dynamic>(request));
+        } on DioException catch (retryError) {
+          handler.next(retryError);
+        }
+      },
+    ));
     //Add interceptor for encryption layer
     // if (encryptData) {
     //   logI('Data will be encrypted for POST / PUT / PATCH');

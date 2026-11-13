@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:foodly/helpers/extensions/string.dart';
 import 'package:foodly/helpers/theme/app_theme.dart';
+import 'package:foodly/widgets/gesboutik/gb_colors.dart';
 
 /// Barre de navigation flottante avec un indicateur qui glisse vers l'onglet
 /// actif (au lieu d'un simple changement de couleur brut à chaque tap).
@@ -9,29 +11,40 @@ class AppBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTabChange;
 
+  /// Gestionnaire : Accueil, Produits, Employés, Paramètres.
+  /// Employé : Accueil, Vente, Paramètres.
+  final bool isManager;
+
   const AppBottomNavBar({
     super.key,
     required this.currentIndex,
     required this.onTabChange,
+    this.isManager = false,
   });
 
-  static final _items = [
-    _NavItem(icon: LucideIcons.layoutDashboard, label: 'Accueil'),
-    _NavItem(icon: LucideIcons.user, label: 'Profil'),
-    _NavItem(icon: LucideIcons.settings, label: 'Réglages'),
-  ];
+  List<_NavItem> get _items => [
+        _NavItem(icon: LucideIcons.layoutDashboard, label: 'nav_home'.tr()),
+        if (isManager) ...[
+          _NavItem(icon: LucideIcons.package, label: 'nav_products'.tr()),
+          _NavItem(icon: LucideIcons.users, label: 'nav_employees'.tr()),
+        ] else
+          _NavItem(icon: LucideIcons.shoppingCart, label: 'nav_sell'.tr()),
+        _NavItem(icon: LucideIcons.settings, label: 'nav_settings'.tr()),
+      ];
 
   @override
   Widget build(BuildContext context) {
     final primary = AppTheme.theme.colorScheme.primary;
-    final count = _items.length;
+    final c = GbColors.of(context);
+    final items = _items;
+    final count = items.length;
 
     return SafeArea(
       minimum: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       child: Container(
         height: 66,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: c.surface,
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
@@ -64,7 +77,7 @@ class AppBottomNavBar extends StatelessWidget {
             ),
             Row(
               children: List.generate(count, (index) {
-                final item = _items[index];
+                final item = items[index];
                 final isActive = index == currentIndex;
                 return Expanded(
                   child: InkWell(
@@ -77,8 +90,9 @@ class AppBottomNavBar extends StatelessWidget {
                       duration: const Duration(milliseconds: 200),
                       style: TextStyle(
                         fontSize: 11.5,
-                        color: isActive ? primary : Colors.grey[500],
-                        fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                        color: isActive ? primary : c.subtext,
+                        fontWeight:
+                            isActive ? FontWeight.w700 : FontWeight.w500,
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -89,7 +103,7 @@ class AppBottomNavBar extends StatelessWidget {
                             child: Icon(
                               item.icon,
                               size: 21,
-                              color: isActive ? primary : Colors.grey[500],
+                              color: isActive ? primary : c.subtext,
                             ),
                           ),
                           const SizedBox(height: 3),

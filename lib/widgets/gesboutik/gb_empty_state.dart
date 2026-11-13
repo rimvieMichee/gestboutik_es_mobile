@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodly/widgets/gesboutik/gb_colors.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 /// État vide générique (liste sans résultat, historique vide, etc.), avec
@@ -53,7 +54,7 @@ class GbEmptyState extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 15.sp,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+                  color: context.gb.text,
                 ),
               ),
               if (subtitle != null) ...[
@@ -61,7 +62,7 @@ class GbEmptyState extends StatelessWidget {
                 Text(
                   subtitle!,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 13.sp, color: Colors.grey[600]),
+                  style: TextStyle(fontSize: 13.sp, color: context.gb.subtext),
                 ),
               ],
               if (action != null) ...[

@@ -1,8 +1,8 @@
-import 'package:foodly/views/apps/change_language.dart';
-import 'package:foodly/views/apps/products/products_screen.dart';
+import 'package:foodly/views/apps/employees/employee_detail_screen.dart';
+import 'package:foodly/views/apps/products/archived_products_screen.dart';
+import 'package:foodly/views/apps/products/product_form_screen.dart';
+import 'package:foodly/views/apps/reports/daily_report_screen.dart';
 import 'package:foodly/views/apps/profile/edit_profile.dart';
-import 'package:foodly/views/apps/profile/profile.dart';
-import 'package:foodly/views/apps/sales/new_sale_screen.dart';
 import 'package:foodly/views/apps/sales/sales_history_screen.dart';
 import 'package:foodly/views/apps/settings/widget/select_language.dart';
 import 'package:foodly/views/auth/login_page.dart';
@@ -38,25 +38,31 @@ getPageRoute() {
         page: () => const MainShell(),
         middlewares: [AuthMiddleware()]),
     GetPage(
-        name: '/profile',
-        page: () => const ProfilePage(),
-        middlewares: [AuthMiddleware()]),
-    GetPage(
         name: '/profileDetail',
         page: () => const ProfileDetails(),
         middlewares: [AuthMiddleware()]),
 
-    GetPage(name: '/selectLanguageScreen', page: () => SelectLanguageScreen()),
-    GetPage(name: '/changeLanguageScreen', page: () => ChangeLanguageScreen()),
+    GetPage(
+        name: '/selectLanguageScreen',
+        page: () => const SelectLanguageScreen(),
+        middlewares: [AuthMiddleware()]),
 
     ///---------------- Ventes ----------------///
     GetPage(
-        name: '/products',
-        page: () => const ProductsScreen(),
+        name: '/employee-detail',
+        page: () => const EmployeeDetailScreen(),
         middlewares: [AuthMiddleware()]),
     GetPage(
-        name: '/new-sale',
-        page: () => const NewSaleScreen(),
+        name: '/archived-products',
+        page: () => const ArchivedProductsScreen(),
+        middlewares: [AuthMiddleware()]),
+    GetPage(
+        name: '/daily-report',
+        page: () => const DailyReportScreen(),
+        middlewares: [AuthMiddleware()]),
+    GetPage(
+        name: '/product-form',
+        page: () => const ProductFormScreen(),
         middlewares: [AuthMiddleware()]),
     GetPage(
         name: '/sales-history',

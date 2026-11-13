@@ -13,7 +13,10 @@ class SettingService {
       final response = await APIService.post(
         path: '/auth/logout',
         mapData: {'refreshToken': refreshToken},
-        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
       );
       return response.statusCode == 200;
     } on DioException {

@@ -31,13 +31,13 @@ class AppTheme {
   static ThemeData theme = AppTheme.getThemeFromThemeMode();
   static TextDirection textDirection = TextDirection.ltr;
 
-  static Color primaryColor = Color(0xff3874ff);
+  static Color primaryColor = Color(0xff17884B);
 
   // static Color primaryColor = Color(0xff006784);
 
   static ThemeData getThemeFromThemeMode() {
     logE("THEME===${LocalStorage.getTheme()}");
-    return LocalStorage.getTheme() == "Dark" ? darkTheme : lightTheme;
+    return LocalStorage.isDarkMode ? darkTheme : lightTheme;
   }
 
   /// -------------------------- Light Theme  -------------------------------------------- ///
@@ -73,8 +73,9 @@ class AppTheme {
 
     /// Colorscheme
     colorScheme: ColorScheme.fromSeed(
-      seedColor: Color(0xff3874ff),
-      // seedColor: Color(0xff2e87a6),
+      seedColor: Color(0xff1FA45C),
+      primary: Color(0xff17884B),
+      onPrimary: Color(0xffffffff),
       brightness: Brightness.light,
     ),
 
@@ -156,7 +157,7 @@ class AppTheme {
     canvasColor: Colors.transparent,
     splashFactory: NoSplash.splashFactory,
 
-    primaryColor: Color(0xff4ddada),
+    primaryColor: Color(0xff3DCB82),
 
     /// AppBar Theme
     appBarTheme: AppBarTheme(
@@ -169,8 +170,9 @@ class AppTheme {
 
     /// Colorscheme
     colorScheme: ColorScheme.fromSeed(
-      seedColor: Color(0xff3874ff),
-      // seedColor: Color(0xff067070),
+      seedColor: Color(0xff1FA45C),
+      primary: Color(0xff3DCB82),
+      onPrimary: Color(0xff04210F),
       background: Color(0xff262729),
       onBackground: Color(0xFFD7D7D7),
       brightness: Brightness.dark,
