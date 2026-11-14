@@ -31,8 +31,6 @@ class _SaleDetailScreenState extends State<SaleDetailScreen> {
   late SaleModel _sale = widget.sale;
   bool _settling = false;
 
-  bool get _isManager => LocalStorage.getUserRole() == 'ADMIN';
-
   Future<void> _settle() async {
     final confirmed = await showGbConfirmSheet(
       context,
@@ -292,7 +290,7 @@ class _SaleDetailScreenState extends State<SaleDetailScreen> {
                 fontWeight: FontWeight.w600,
                 color: context.gb.text),
           ),
-          if (!settled && _isManager) ...[
+          if (!settled) ...[
             SizedBox(height: 14.h),
             SizedBox(
               width: double.infinity,
@@ -309,12 +307,6 @@ class _SaleDetailScreenState extends State<SaleDetailScreen> {
                     : const Icon(LucideIcons.checkCircle2),
                 label: Text(_settling ? 'saving'.tr() : 'mark_paid'.tr()),
               ),
-            ),
-          ] else if (!settled) ...[
-            SizedBox(height: 8.h),
-            Text(
-              'manager_will_mark'.tr(),
-              style: TextStyle(fontSize: 11.5.sp, color: context.gb.subtext),
             ),
           ],
         ],
