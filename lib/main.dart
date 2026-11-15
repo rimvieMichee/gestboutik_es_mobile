@@ -109,7 +109,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             darkTheme: GbTheme.dark(),
             defaultTransition: Transition.native,
             navigatorKey: NavigationService.navigatorKey,
-            initialRoute: AuthService.isLoggedIn ? "/dashboard" : "/auth/login",
+            initialRoute: AuthService.isLoggedIn
+                ? "/dashboard"
+                : LocalStorage.onboardingDone
+                    ? "/auth/login"
+                    : "/onboarding",
             themeMode: LocalStorage.getThemeMode(),
             getPages: getPageRoute(),
             builder: (_, child) {

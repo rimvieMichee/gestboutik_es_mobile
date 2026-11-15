@@ -192,7 +192,7 @@ class _SaleConfirmationScreenState extends State<SaleConfirmationScreen>
                       width: double.infinity,
                       height: 52.h,
                       child: ElevatedButton(
-                        onPressed: () => _backToShell(tab: 1),
+                        onPressed: () => _backToShell(tab: MainShellController.saleTab),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppTheme.theme.colorScheme.primary,
                           shape: RoundedRectangleBorder(

@@ -6,6 +6,7 @@ import 'package:foodly/views/apps/profile/edit_profile.dart';
 import 'package:foodly/views/apps/sales/sales_history_screen.dart';
 import 'package:foodly/views/apps/settings/widget/select_language.dart';
 import 'package:foodly/views/auth/login_page.dart';
+import 'package:foodly/views/onboarding/onboarding_screen.dart';
 import 'package:foodly/views/layouts/main_shell.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -33,6 +34,7 @@ class AuthMiddleware extends GetMiddleware {
 
 getPageRoute() {
   var routes = [
+    GetPage(name: '/onboarding', page: () => const OnboardingScreen()),
     GetPage(
         name: '/dashboard',
         page: () => const MainShell(),

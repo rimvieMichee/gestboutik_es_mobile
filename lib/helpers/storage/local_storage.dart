@@ -285,6 +285,16 @@ class LocalStorage {
   /// Vrai si le gestionnaire gère plusieurs boutiques (sélecteur affiché).
   static bool get isMultiShop => getShopCount() > 1;
 
+  static const String _onboardingDone = "onboarding_done";
+
+  /// Vrai quand la présentation de premier lancement a été vue (ou ignorée).
+  static bool get onboardingDone =>
+      const bool.fromEnvironment('SKIP_ONBOARDING') ||
+      (preferences.getBool(_onboardingDone) ?? false);
+
+  static Future<bool> setOnboardingDone() =>
+      preferences.setBool(_onboardingDone, true);
+
   static Future<bool> setBoutiqueId(String boutiqueId) {
     return preferences.setString(_boutiqueId, boutiqueId);
   }

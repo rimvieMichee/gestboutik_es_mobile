@@ -11,7 +11,8 @@ class AppBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTabChange;
 
-  /// Gestionnaire : Accueil, Vente, Produits, Employés, Paramètres.
+  /// Gestionnaire : Accueil, Produits, Vente (bouton central surélevé), Employés,
+  /// Paramètres.
   /// Employé : Accueil, Vente, Paramètres.
   final bool isManager;
 
@@ -24,13 +25,49 @@ class AppBottomNavBar extends StatelessWidget {
 
   List<_NavItem> get _items => [
         _NavItem(icon: LucideIcons.layoutDashboard, label: 'nav_home'.tr()),
-        _NavItem(icon: LucideIcons.shoppingCart, label: 'nav_sell'.tr()),
         if (isManager) ...[
           _NavItem(icon: LucideIcons.package, label: 'nav_products'.tr()),
+          // Au milieu, le bouton surélevé : la vente est l'action principale.
+          _NavItem(icon: LucideIcons.shoppingCart, label: 'nav_sell'.tr()),
           _NavItem(icon: LucideIcons.users, label: 'nav_employees'.tr()),
-        ],
+        ] else
+          _NavItem(icon: LucideIcons.shoppingCart, label: 'nav_sell'.tr()),
         _NavItem(icon: LucideIcons.settings, label: 'nav_settings'.tr()),
       ];
+
+  /// Bouton rond surélevé de l'onglet central (comme l'appli client).
+  Widget _centerButton(
+      _NavItem item, bool active, Color primary, GbColors c) {
+    return GestureDetector(
+      onTap: () {
+        if (!active) HapticFeedback.selectionClick();
+        onTabChange(2);
+      },
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          color: active ? primary : c.surface,
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: active ? primary : primary.withOpacity(0.35),
+            width: 2.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: primary.withOpacity(active ? 0.38 : 0.16),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Icon(item.icon, size: 26, color: active ? Colors.white : primary),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,10 +75,13 @@ class AppBottomNavBar extends StatelessWidget {
     final c = GbColors.of(context);
     final items = _items;
     final count = items.length;
+    // 5 onglets : celui du milieu est un bouton rond surélevé.
+    final centerIndex = isManager ? 2 : -1;
 
     return SafeArea(
       minimum: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       child: Container(
+        clipBehavior: Clip.none,
         height: 66,
         decoration: BoxDecoration(
           color: c.surface,
@@ -56,7 +96,18 @@ class AppBottomNavBar extends StatelessWidget {
         ),
         padding: const EdgeInsets.all(6),
         child: Stack(
+          clipBehavior: Clip.none,
           children: [
+            if (centerIndex >= 0)
+              Positioned(
+                top: -30,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: _centerButton(
+                      items[centerIndex], currentIndex == centerIndex, primary, c),
+                ),
+              ),
             AnimatedAlign(
               duration: const Duration(milliseconds: 280),
               curve: Curves.easeOutCubic,
@@ -66,11 +117,15 @@ class AppBottomNavBar extends StatelessWidget {
               ),
               child: FractionallySizedBox(
                 widthFactor: 1 / count,
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 2),
-                  decoration: BoxDecoration(
-                    color: primary.withOpacity(0.10),
-                    borderRadius: BorderRadius.circular(18),
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 200),
+                  opacity: currentIndex == centerIndex ? 0 : 1,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 2),
+                    decoration: BoxDecoration(
+                      color: primary.withOpacity(0.10),
+                      borderRadius: BorderRadius.circular(18),
+                    ),
                   ),
                 ),
               ),
@@ -79,6 +134,33 @@ class AppBottomNavBar extends StatelessWidget {
               children: List.generate(count, (index) {
                 final item = items[index];
                 final isActive = index == currentIndex;
+                if (index == centerIndex) {
+                  // Le bouton rond est dessiné au-dessus ; ici, seulement le libellé.
+                  return Expanded(
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(18),
+                      onTap: () {
+                        if (!isActive) HapticFeedback.selectionClick();
+                        onTabChange(index);
+                      },
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Text(
+                            item.label,
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              color: isActive ? primary : c.subtext,
+                              fontWeight:
+                                  isActive ? FontWeight.w700 : FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }
                 return Expanded(
                   child: InkWell(
                     borderRadius: BorderRadius.circular(18),

@@ -773,7 +773,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           icon: LucideIcons.plusCircle,
           label: 'new_sale'.tr(),
           subtitle: 'new_sale_desc'.tr(),
-          onTap: () => Get.find<MainShellController>().changeTab(1),
+          onTap: () => Get.find<MainShellController>().changeTab(MainShellController.saleTab),
         ),
     ];
     if (actions.isEmpty) {
