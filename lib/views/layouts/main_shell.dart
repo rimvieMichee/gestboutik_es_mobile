@@ -10,7 +10,7 @@ import 'package:foodly/views/apps/settings/settings_page.dart';
 import 'package:foodly/widgets/bottom_bar/bottom_nav_bar.dart';
 
 /// Coquille principale affichée après connexion.
-/// - Gestionnaire : Accueil / Produits / Employés / Paramètres
+/// - Gestionnaire : Accueil / Vente / Produits / Employés / Paramètres
 /// - Employé : Accueil / Vente / Paramètres
 /// L'historique des ventes est dans les Paramètres.
 class MainShell extends StatelessWidget {
@@ -27,11 +27,12 @@ class MainShell extends StatelessWidget {
     final controller = Get.put(MainShellController(initialIndex: initialTab));
     final tabs = [
       const DashboardScreen(),
+      // Gestionnaire et employé vendent : l'onglet Vente est le deuxième.
+      const NewSaleScreen(),
       if (_isManager) ...[
         const ProductsScreen(embedded: true),
         const EmployeesScreen(),
-      ] else
-        const NewSaleScreen(),
+      ],
       SettingScreen(),
     ];
 

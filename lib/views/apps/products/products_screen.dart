@@ -338,6 +338,8 @@ class _ProductCard extends StatelessWidget {
               _showStockSheet(context, adjustment: true);
             case 'archive':
               _confirmArchive(context);
+            case 'delete':
+              _confirmDelete(context);
           }
         },
         itemBuilder: (_) => [
@@ -345,6 +347,7 @@ class _ProductCard extends StatelessWidget {
           _item('restock', LucideIcons.packagePlus, 'restock'.tr()),
           _item('adjust', LucideIcons.slidersHorizontal, 'adjust_stock'.tr()),
           _item('archive', LucideIcons.archive, 'archive_set_aside'.tr()),
+          _item('delete', LucideIcons.trash2, 'delete_product'.tr()),
         ],
       ),
     );
@@ -359,6 +362,18 @@ class _ProductCard extends StatelessWidget {
       icon: LucideIcons.archive,
     );
     if (ok == true) controller.archive(product);
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final ok = await showGbConfirmSheet(
+      context,
+      title: 'delete_this_product'.tr(),
+      message: 'delete_confirm_body'.trp({'name': product.nom}),
+      confirmLabel: 'delete'.tr(),
+      icon: LucideIcons.trash2,
+      destructive: true,
+    );
+    if (ok == true) controller.remove(product);
   }
 
   PopupMenuItem<String> _item(String value, IconData icon, String label) =>

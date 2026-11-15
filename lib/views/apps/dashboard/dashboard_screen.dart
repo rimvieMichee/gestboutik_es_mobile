@@ -765,12 +765,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // -------------------------------------------------------------- raccourcis
 
   Widget _buildQuickActions() {
-    // Le catalogue vit dans l'onglet Vente (employé) ou Produits (gestionnaire),
-    // et l'historique des ventes dans les Paramètres : seul le raccourci vers
-    // l'onglet Vente reste ici, pour l'employé.
+    // Le catalogue vit dans l'onglet Vente (employé et gestionnaire) ou Produits
+    // (gestionnaire), l'historique des ventes dans les Paramètres : seul le
+    // raccourci vers l'onglet Vente reste ici.
     final actions = [
-      if (!controller.isManager)
-        _QuickAction(
+      _QuickAction(
           icon: LucideIcons.plusCircle,
           label: 'new_sale'.tr(),
           subtitle: 'new_sale_desc'.tr(),

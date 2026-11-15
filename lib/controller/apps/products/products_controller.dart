@@ -159,6 +159,22 @@ class ProductsController extends MyController with RealtimeListener {
     }
   }
 
+  /// Supprime définitivement un produit jamais vendu ; sinon le serveur
+  /// explique qu'il faut l'archiver (message affiché tel quel).
+  Future<void> remove(ProductModel product) async {
+    try {
+      await ProductService.delete(product.id);
+      products.removeWhere((p) => p.id == product.id);
+      appSnackbar(
+        heading: 'product_deleted'.tr(),
+        message: 'product_deleted_body'.trp({'name': product.nom}),
+        snackbarState: SnackbarState.success,
+      );
+    } on DioException catch (e) {
+      letMeHandleAllErrors(e);
+    }
+  }
+
   Future<void> toggleStatus(ProductModel product) async {
     try {
       await ProductService.changeStatus(product.id,

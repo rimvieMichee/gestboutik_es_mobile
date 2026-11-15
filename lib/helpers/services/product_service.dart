@@ -107,6 +107,11 @@ class ProductService {
     return ProductModel.fromJson(response.data!);
   }
 
+  /// Suppression définitive (refusée par le serveur si le produit a déjà été vendu).
+  static Future<void> delete(String id) async {
+    await APIService.delete(path: '/products/$id');
+  }
+
   static Future<void> changeStatus(String id, {required bool active}) async {
     await APIService.patch(
       path: '/products/$id/status',

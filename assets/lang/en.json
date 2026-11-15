@@ -327,5 +327,11 @@
   "new_sales_one": "{n} new sale",
   "new_sales_other": "{n} new sales",
   "all_shops_report": "All shops report",
-  "all_shops_report_hint": "Combined figures and breakdown by shop"
+  "all_shops_report_hint": "Combined figures and breakdown by shop",
+  "product_deleted": "Product deleted",
+  "product_deleted_body": "“{name}” was permanently deleted.",
+  "delete_product": "Delete",
+  "delete_this_product": "Delete this product?",
+  "delete_confirm_body": "“{name}” will be permanently deleted, along with its stock history. This works only if it was never sold; otherwise, archive it.",
+  "delete": "Delete"
 }

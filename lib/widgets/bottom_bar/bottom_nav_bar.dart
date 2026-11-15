@@ -11,7 +11,7 @@ class AppBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTabChange;
 
-  /// Gestionnaire : Accueil, Produits, Employés, Paramètres.
+  /// Gestionnaire : Accueil, Vente, Produits, Employés, Paramètres.
   /// Employé : Accueil, Vente, Paramètres.
   final bool isManager;
 
@@ -24,11 +24,11 @@ class AppBottomNavBar extends StatelessWidget {
 
   List<_NavItem> get _items => [
         _NavItem(icon: LucideIcons.layoutDashboard, label: 'nav_home'.tr()),
+        _NavItem(icon: LucideIcons.shoppingCart, label: 'nav_sell'.tr()),
         if (isManager) ...[
           _NavItem(icon: LucideIcons.package, label: 'nav_products'.tr()),
           _NavItem(icon: LucideIcons.users, label: 'nav_employees'.tr()),
-        ] else
-          _NavItem(icon: LucideIcons.shoppingCart, label: 'nav_sell'.tr()),
+        ],
         _NavItem(icon: LucideIcons.settings, label: 'nav_settings'.tr()),
       ];
 

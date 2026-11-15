@@ -336,5 +336,11 @@
   "new_sales_one": "{n} nouvelle vente",
   "new_sales_other": "{n} nouvelles ventes",
   "all_shops_report": "Rapport de toutes les boutiques",
-  "all_shops_report_hint": "Chiffres consolidés et détail par boutique"
+  "all_shops_report_hint": "Chiffres consolidés et détail par boutique",
+  "product_deleted": "Produit supprimé",
+  "product_deleted_body": "« {name} » a été supprimé définitivement.",
+  "delete_product": "Supprimer",
+  "delete_this_product": "Supprimer ce produit ?",
+  "delete_confirm_body": "« {name} » sera supprimé définitivement, avec son historique de stock. C'est possible tant qu'il n'a jamais été vendu ; sinon, archivez-le.",
+  "delete": "Supprimer"
 }
