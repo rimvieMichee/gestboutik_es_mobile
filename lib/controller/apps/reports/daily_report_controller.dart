@@ -1,7 +1,7 @@
 import 'package:foodly/helpers/extensions/string.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide Trans;
-import 'package:printing/printing.dart';
+import 'package:foodly/views/apps/reports/pdf_preview_screen.dart';
 import 'package:foodly/controller/my_controller.dart';
 import 'package:foodly/helpers/services/realtime_service.dart';
 import 'package:foodly/helpers/utils/realtime_listener.dart';
@@ -76,8 +76,8 @@ class DailyReportController extends MyController with RealtimeListener {
     return load();
   }
 
-  /// Génère le PDF et ouvre le partage du téléphone (enregistrer dans les
-  /// fichiers, envoyer par WhatsApp ou e-mail, imprimer...).
+  /// Génère le PDF et l'ouvre en aperçu ; l'envoi (WhatsApp, e-mail,
+  /// fichiers...) et l'impression se décident depuis l'aperçu.
   Future<void> exportPdf() async {
     final data = report.value;
     if (data == null || isExporting.value) return;
@@ -97,7 +97,7 @@ class DailyReportController extends MyController with RealtimeListener {
         PeriodKind.custom => '${ymd(p.start)}_au_${ymd(p.end)}',
       };
       final name = '$scope-$suffix.pdf';
-      await Printing.sharePdf(bytes: bytes, filename: name);
+      await Get.to(() => PdfPreviewScreen(bytes: bytes, filename: name));
     } catch (_) {
       appSnackbar(
         heading: 'PDF',

@@ -667,11 +667,11 @@ class _ExportBar extends StatelessWidget {
                     child: const CircularProgressIndicator(
                         strokeWidth: 2, color: Colors.white),
                   )
-                : const Icon(LucideIcons.download),
+                : const Icon(LucideIcons.fileSearch),
             label: Text(
               controller.isExporting.value
                   ? 'generating_pdf'.tr()
-                  : 'download_pdf'.tr(),
+                  : 'preview_pdf'.tr(),
               style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w700),
             ),
           ),

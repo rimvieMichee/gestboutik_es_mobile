@@ -376,5 +376,9 @@
   "pw_err_current": "Enter your current password.",
   "pw_err_short": "The new password must be at least 8 characters.",
   "pw_err_same": "The new password must differ from the current one.",
-  "pw_err_match": "The confirmation doesn't match the new password."
+  "pw_err_match": "The confirmation doesn't match the new password.",
+  "preview_pdf": "View PDF",
+  "pdf_preview": "Report preview",
+  "send_pdf": "Send",
+  "print": "Print"
 }
