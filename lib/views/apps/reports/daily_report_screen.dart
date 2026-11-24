@@ -511,9 +511,7 @@ class _DateBar extends StatelessWidget {
   }
 }
 
-/// Résumé : chiffre d'affaires, puis ventes, articles, encaissé, crédit.
 class _SummaryCard extends StatelessWidget {
-  /// `null` : chargement, les valeurs sont des squelettes.
   final DailyReport? report;
   const _SummaryCard({required this.report});
 
@@ -756,17 +754,9 @@ class _ExportBar extends StatelessWidget {
         return SizedBox(
           width: double.infinity,
           height: 50.h,
-          child: FilledButton.icon(
+          child: FilledButton(
             onPressed: ready ? controller.exportPdf : null,
-            icon: controller.isExporting.value
-                ? SizedBox(
-                    width: 18.w,
-                    height: 18.w,
-                    child: const CircularProgressIndicator(
-                        strokeWidth: 2, color: Colors.white),
-                  )
-                : const Icon(LucideIcons.fileSearch),
-            label: Text(
+            child: Text(
               controller.isExporting.value
                   ? 'generating_pdf'.tr()
                   : 'preview_pdf'.tr(),

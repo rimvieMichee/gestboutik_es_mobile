@@ -364,22 +364,14 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         () => SizedBox(
           width: double.infinity,
           height: 50.h,
-          child: FilledButton.icon(
+          child: FilledButton(
             onPressed: _controller.isSaving.value ? null : _submit,
             style: FilledButton.styleFrom(
               backgroundColor: primary,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14.r)),
             ),
-            icon: _controller.isSaving.value
-                ? SizedBox(
-                    width: 18.w,
-                    height: 18.w,
-                    child: const CircularProgressIndicator(
-                        strokeWidth: 2, color: Colors.white),
-                  )
-                : const Icon(LucideIcons.check),
-            label: Text(
+            child: Text(
               _controller.isSaving.value
                   ? 'saving'.tr()
                   : (_isEdit ? 'save_changes'.tr() : 'create_product'.tr()),

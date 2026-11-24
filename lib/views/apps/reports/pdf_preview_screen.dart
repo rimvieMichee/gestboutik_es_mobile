@@ -54,10 +54,10 @@ class PdfPreviewScreen extends StatelessWidget {
               flex: 5,
               child: SizedBox(
                 height: 50.h,
-                child: OutlinedButton.icon(
+                child: OutlinedButton(
                   onPressed: () => Printing.layoutPdf(
                       onLayout: (_) async => bytes, name: filename),
-                  label: FittedBox(
+                  child: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Text('print'.tr(),
                         maxLines: 1,
@@ -75,10 +75,10 @@ class PdfPreviewScreen extends StatelessWidget {
               flex: 6,
               child: SizedBox(
                 height: 50.h,
-                child: FilledButton.icon(
+                child: FilledButton(
                   onPressed: () =>
                       Printing.sharePdf(bytes: bytes, filename: filename),
-                  label: Text('send_pdf'.tr(),
+                  child: Text('send_pdf'.tr(),
                       style: TextStyle(
                           fontSize: 15.sp, fontWeight: FontWeight.w700)),
                 ),

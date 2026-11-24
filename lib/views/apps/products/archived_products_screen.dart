@@ -134,10 +134,9 @@ class _ArchivedTile extends StatelessWidget {
               ],
             ),
           ),
-          OutlinedButton.icon(
+          OutlinedButton(
             onPressed: onRestore,
-            icon: Icon(LucideIcons.archiveRestore, size: 17.sp),
-            label: Text('restore'.tr()),
+            child: Text('restore'.tr()),
             style: OutlinedButton.styleFrom(
               foregroundColor: primary,
               side: BorderSide(color: primary.withOpacity(0.5)),

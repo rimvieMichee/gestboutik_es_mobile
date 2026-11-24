@@ -290,11 +290,10 @@ class EmployeeDetailScreen extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: OutlinedButton.icon(
+          child: OutlinedButton(
             onPressed: () =>
                 EmployeesScreen.showPasswordSheet(context, list, e),
-            icon: const Icon(LucideIcons.keyRound, size: 18),
-            label: Text('login_password'.tr()),
+            child: Text('login_password'.tr()),
             style: OutlinedButton.styleFrom(
               foregroundColor: primary,
               side: BorderSide(color: primary.withOpacity(0.4)),
@@ -306,11 +305,9 @@ class EmployeeDetailScreen extends StatelessWidget {
         ),
         SizedBox(width: 12.w),
         Expanded(
-          child: OutlinedButton.icon(
+          child: OutlinedButton(
             onPressed: () => EmployeesScreen.confirmToggle(context, list, e),
-            icon: Icon(e.isActive ? LucideIcons.userX : LucideIcons.userCheck,
-                size: 18),
-            label: Text(e.isActive ? 'deactivate'.tr() : 'reactivate'.tr()),
+            child: Text(e.isActive ? 'deactivate'.tr() : 'reactivate'.tr()),
             style: OutlinedButton.styleFrom(
               foregroundColor: danger,
               side: BorderSide(color: danger.withOpacity(0.4)),

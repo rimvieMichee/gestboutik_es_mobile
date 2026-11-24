@@ -295,17 +295,9 @@ class _SaleDetailScreenState extends State<SaleDetailScreen> {
             SizedBox(
               width: double.infinity,
               height: 48.h,
-              child: FilledButton.icon(
+              child: FilledButton(
                 onPressed: _settling ? null : _settle,
-                icon: _settling
-                    ? SizedBox(
-                        width: 18.w,
-                        height: 18.w,
-                        child: const CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
-                      )
-                    : const Icon(LucideIcons.checkCircle2),
-                label: Text(_settling ? 'saving'.tr() : 'mark_paid'.tr()),
+                child: Text(_settling ? 'saving'.tr() : 'mark_paid'.tr()),
               ),
             ),
           ],

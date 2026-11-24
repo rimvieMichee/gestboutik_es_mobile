@@ -35,13 +35,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     ..repeat();
   double _page = 0;
 
-  /// Teinte propre à chaque écran ; le fond glisse de l'une à l'autre.
-  List<Color> get _tints => [
-        AppTheme.theme.colorScheme.primary,
-        const Color(0xff0EA5A4),
-        const Color(0xffF59E0B),
-        const Color(0xff3B5BDB),
-      ];
+  /// Une seule couleur pour toute la présentation : celle de la marque.
+  List<Color> get _tints =>
+      List.filled(_count, AppTheme.theme.colorScheme.primary);
 
   bool get _replay {
     final a = Get.arguments;
@@ -85,11 +81,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     }
   }
 
-  Color get _tint {
-    final i = _page.floor().clamp(0, _count - 1);
-    final j = (i + 1).clamp(0, _count - 1);
-    return Color.lerp(_tints[i], _tints[j], _page - i) ?? _tints[i];
-  }
+  Color get _tint => _tints[0];
 
   @override
   Widget build(BuildContext context) {
@@ -98,24 +90,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     final tint = _tint;
     final lastIndex = _page.round() >= _count - 1;
     return Scaffold(
-      backgroundColor: c.background,
+      backgroundColor: c.isDark ? c.background : Colors.white,
       body: Stack(
         children: [
-          // Fond : dégradé teinté + halos en parallaxe.
-          Positioned.fill(
-            child: AnimatedBuilder(
-              animation: _ambient,
-              builder: (_, __) => CustomPaint(
-                painter: _BackdropPainter(
-                  page: _page,
-                  t: _ambient.value,
-                  tint: tint,
-                  dark: c.isDark,
-                  base: c.background,
-                ),
-              ),
-            ),
-          ),
           SafeArea(
             child: Column(
               children: [
@@ -216,122 +193,29 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   Widget _button(Color tint, bool last) {
     return Padding(
       padding: EdgeInsets.fromLTRB(24.w, 20.h, 24.w, 22.h),
-      child: GestureDetector(
-        onTap: _next,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOutCubic,
-          height: 58.h,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [tint, Color.lerp(tint, Colors.black, 0.22)!],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(20.r),
-            boxShadow: [
-              BoxShadow(
-                color: tint.withOpacity(last ? 0.5 : 0.32),
-                blurRadius: last ? 26 : 18,
-                offset: const Offset(0, 9),
-              ),
-            ],
+      child: SizedBox(
+        width: double.infinity,
+        height: 56.h,
+        child: FilledButton(
+          onPressed: _next,
+          style: FilledButton.styleFrom(
+            backgroundColor: tint,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18.r)),
           ),
-          child: Center(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 260),
-              transitionBuilder: (child, anim) => FadeTransition(
-                opacity: anim,
-                child: SlideTransition(
-                  position: Tween(
-                          begin: const Offset(0, 0.4), end: Offset.zero)
-                      .animate(anim),
-                  child: child,
-                ),
-              ),
-              child: Row(
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 220),
+            child: Text((last ? 'ob_start' : 'ob_next').tr(),
                 key: ValueKey(last),
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text((last ? 'ob_start' : 'ob_next').tr(),
-                      style: TextStyle(
-                          fontSize: 16.5.sp,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white)),
-                  SizedBox(width: 10.w),
-                  Icon(last ? LucideIcons.rocket : LucideIcons.arrowRight,
-                      size: 20.sp, color: Colors.white),
-                ],
-              ),
-            ),
+                style: TextStyle(
+                    fontSize: 16.5.sp,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white)),
           ),
         ),
       ),
     );
   }
-}
-
-// ---------------------------------------------------------------- fond animé
-
-class _BackdropPainter extends CustomPainter {
-  final double page;
-  final double t;
-  final Color tint;
-  final bool dark;
-  final Color base;
-
-  _BackdropPainter({
-    required this.page,
-    required this.t,
-    required this.tint,
-    required this.dark,
-    required this.base,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width, h = size.height;
-    // Dégradé vertical teinté, très doux.
-    canvas.drawRect(
-      Offset.zero & size,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color.lerp(base, tint, dark ? 0.20 : 0.12)!,
-            base,
-            Color.lerp(base, tint, dark ? 0.12 : 0.05)!,
-          ],
-          stops: const [0, 0.55, 1],
-        ).createShader(Offset.zero & size),
-    );
-    // Halos qui flottent et défilent plus lentement que les pages.
-    void blob(double fx, double fy, double r, double speed, double phase,
-        double alpha) {
-      final dx = -page * w * speed + math.sin((t + phase) * 2 * math.pi) * 22;
-      final dy = math.cos((t + phase) * 2 * math.pi) * 18;
-      final center = Offset(w * fx + dx, h * fy + dy);
-      canvas.drawCircle(
-        center,
-        r,
-        Paint()
-          ..shader = RadialGradient(colors: [
-            tint.withOpacity(alpha),
-            tint.withOpacity(0),
-          ]).createShader(Rect.fromCircle(center: center, radius: r)),
-      );
-    }
-
-    blob(0.85, 0.16, w * 0.62, 0.18, 0.0, dark ? 0.34 : 0.26);
-    blob(0.10, 0.52, w * 0.55, 0.30, 0.33, dark ? 0.26 : 0.18);
-    blob(0.78, 0.86, w * 0.7, 0.12, 0.66, dark ? 0.24 : 0.16);
-  }
-
-  @override
-  bool shouldRepaint(_BackdropPainter o) =>
-      o.page != page || o.t != t || o.tint != tint;
 }
 
 // -------------------------------------------------------------------- écrans
@@ -650,10 +534,10 @@ class _ControlArt extends StatelessWidget {
                   tile(LucideIcons.shoppingBag, 'ob_m_sales'.tr(), '12', tint, 0),
                   SizedBox(width: 12.w),
                   tile(LucideIcons.package, 'ob_m_products'.tr(), '48',
-                      const Color(0xff3B5BDB), 1),
+                      tint, 1),
                   SizedBox(width: 12.w),
                   tile(LucideIcons.users, 'ob_m_team'.tr(), '3',
-                      const Color(0xffD97706), 2),
+                      tint, 2),
                 ],
               ),
             ],
@@ -776,7 +660,7 @@ class _TeamArt extends StatelessWidget {
                     ),
                   ),
                   person(LucideIcons.layoutDashboard, 'ob_m_manager'.tr(),
-                      const Color(0xff3B5BDB),
+                      tint,
                       _seg(t, 0.1, 0.4, Curves.easeOutBack)),
                 ],
               ),
@@ -837,9 +721,7 @@ class _TeamArt extends StatelessWidget {
                                     width: 8,
                                     height: 8,
                                     decoration: BoxDecoration(
-                                        color: i == 0
-                                            ? const Color(0xffF59E0B)
-                                            : const Color(0xff3B5BDB),
+                                        color: i == 0 ? tint : tint.withOpacity(0.45),
                                         shape: BoxShape.circle),
                                   ),
                                   SizedBox(width: 8.w),
@@ -993,10 +875,10 @@ class _StockArt extends StatelessWidget {
                             Container(
                               padding: EdgeInsets.all(8.w),
                               decoration: BoxDecoration(
-                                  color: const Color(0xffF2B84B).withOpacity(0.25),
+                                  color: tint.withOpacity(0.14),
                                   borderRadius: BorderRadius.circular(11.r)),
                               child: Icon(LucideIcons.package,
-                                  size: 18.sp, color: const Color(0xffB7791F)),
+                                  size: 18.sp, color: tint),
                             ),
                             SizedBox(width: 10.w),
                             Text('ob_m_rice'.tr(),
@@ -1143,11 +1025,11 @@ class _MoreArt extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             row(0, t, LucideIcons.creditCard, 'ob_m_credit'.tr(),
-                'ob_m_credit_sub'.tr(), const Color(0xffD97706), -0.06),
+                'ob_m_credit_sub'.tr(), tint, -0.06),
             row(1, t, LucideIcons.fileText, 'ob_m_pdf'.tr(), 'ob_m_pdf_sub'.tr(),
                 tint, 0.05),
             row(2, t, LucideIcons.store, 'ob_m_shops'.tr(),
-                'ob_m_shops_sub'.tr(), const Color(0xff0EA5A4), -0.05),
+                'ob_m_shops_sub'.tr(), tint, -0.05),
           ],
         ),
       ),
