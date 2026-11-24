@@ -76,8 +76,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
                 _sliver(_buildTotals(controller), top: 20),
-                if (controller.hasLoaded)
-                  _sliver(_buildWeekCard(controller), top: 12),
+                _sliver(_buildWeekCard(controller), top: 12),
                 if (controller.hasLoaded && controller.creditDu > 0)
                   _sliver(_buildCreditCard(controller), top: 14),
                 _sliver(_buildPeriodSection(controller), top: 26),
@@ -239,22 +238,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
         SizedBox(height: 12.h),
-        if (c.isLoading && !c.hasLoaded)
-          GbSkeleton.dashboardTotalsRow()
-        else
-          Row(
-            children: [
-              for (var i = 0; i < items.length; i++) ...[
-                if (i > 0) SizedBox(width: 10.w),
-                Expanded(
-                  child: GbStaggeredItem(
-                    index: i,
-                    child: _totalCard(items[i].$1, items[i].$2, items[i].$3),
-                  ),
-                ),
-              ],
+        Row(
+          children: [
+            for (var i = 0; i < items.length; i++) ...[
+              if (i > 0) SizedBox(width: 10.w),
+              Expanded(
+                child: _totalCard(items[i].$1, items[i].$2, items[i].$3,
+                    loading: !c.hasLoaded),
+              ),
             ],
-          ),
+          ],
+        ),
       ],
     );
   }
@@ -295,22 +289,45 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     style: TextStyle(
                         fontSize: 12.5.sp, color: context.gb.subtext)),
                 SizedBox(height: 3.h),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(formatFcfa(now),
-                      style: TextStyle(
-                          fontSize: 22.sp,
-                          fontWeight: FontWeight.w800,
-                          color: context.gb.text)),
-                ),
+                if (!c.hasLoaded)
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: SizedBox(
+                      width: 170.w,
+                      child: GbTextBone('000 000 FCFA',
+                          style: TextStyle(
+                              fontSize: 22.sp, fontWeight: FontWeight.w800)),
+                    ),
+                  )
+                else
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(formatFcfa(now),
+                        style: TextStyle(
+                            fontSize: 22.sp,
+                            fontWeight: FontWeight.w800,
+                            color: context.gb.text)),
+                  ),
                 SizedBox(height: 3.h),
-                Text(
-                  '$range · ${(c.week.nombreVentes > 1 ? 'n_sales_other' : 'n_sales_one').trp({
-                        'n': '${c.week.nombreVentes}'
-                      })}',
-                  style: TextStyle(fontSize: 11.5.sp, color: context.gb.subtext),
-                ),
+                if (!c.hasLoaded)
+                  Row(
+                    children: [
+                      Text('$range · ',
+                          style: TextStyle(
+                              fontSize: 11.5.sp, color: context.gb.subtext)),
+                      GbTextBone('0 ventes',
+                          style: TextStyle(fontSize: 11.5.sp)),
+                    ],
+                  )
+                else
+                  Text(
+                    '$range · ${(c.week.nombreVentes > 1 ? 'n_sales_other' : 'n_sales_one').trp({
+                          'n': '${c.week.nombreVentes}'
+                        })}',
+                    style:
+                        TextStyle(fontSize: 11.5.sp, color: context.gb.subtext),
+                  ),
               ],
             ),
           ),
@@ -340,7 +357,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _totalCard(String label, IconData icon, SalesSummary s) {
+  Widget _totalCard(String label, IconData icon, SalesSummary s,
+      {bool loading = false}) {
     final primary = AppTheme.theme.colorScheme.primary;
     return Container(
       padding: EdgeInsets.all(12.w),
@@ -362,23 +380,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ],
           ),
           SizedBox(height: 10.h),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
-            child: Text(
-              formatFcfa(s.chiffreAffaires),
-              style: TextStyle(
-                  fontSize: 15.sp,
-                  fontWeight: FontWeight.w800,
-                  color: context.gb.text),
+          if (loading)
+            GbTextBone('00 000 FCFA',
+                style: TextStyle(
+                    fontSize: 15.sp, fontWeight: FontWeight.w800))
+          else
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                formatFcfa(s.chiffreAffaires),
+                style: TextStyle(
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w800,
+                    color: context.gb.text),
+              ),
             ),
-          ),
           SizedBox(height: 2.h),
-          Text(
-            (s.nombreVentes > 1 ? 'n_sales_other' : 'n_sales_one')
-                .trp({'n': '${s.nombreVentes}'}),
-            style: TextStyle(fontSize: 11.sp, color: context.gb.subtext),
-          ),
+          if (loading)
+            GbTextBone('0 ventes', style: TextStyle(fontSize: 11.sp))
+          else
+            Text(
+              (s.nombreVentes > 1 ? 'n_sales_other' : 'n_sales_one')
+                  .trp({'n': '${s.nombreVentes}'}),
+              style: TextStyle(fontSize: 11.sp, color: context.gb.subtext),
+            ),
         ],
       ),
     );
@@ -508,10 +534,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               _periodNavigator(c),
               Divider(height: 24.h, color: context.gb.border),
-              if (c.isPeriodLoading)
-                GbSkeleton.periodResult()
-              else
-                _periodResult(c.periodSummary),
+              _periodResult(c.periodSummary,
+                  loading: c.isPeriodLoading || !c.hasLoaded),
             ],
           ),
         ),
@@ -573,7 +597,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _periodResult(SalesSummary s) {
+  Widget _periodResult(SalesSummary s, {bool loading = false}) {
     final primary = AppTheme.theme.colorScheme.primary;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -581,19 +605,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
         Text('revenue'.tr(),
             style: TextStyle(fontSize: 12.sp, color: context.gb.subtext)),
         SizedBox(height: 4.h),
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          alignment: Alignment.centerLeft,
-          child: Text(
-            formatFcfa(s.chiffreAffaires),
-            style: TextStyle(
-                fontSize: 26.sp, fontWeight: FontWeight.w800, color: primary),
+        if (loading)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: 190.w,
+              child: GbTextBone('000 000 FCFA',
+                  style: TextStyle(
+                      fontSize: 26.sp, fontWeight: FontWeight.w800)),
+            ),
+          )
+        else
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              formatFcfa(s.chiffreAffaires),
+              style: TextStyle(
+                  fontSize: 26.sp, fontWeight: FontWeight.w800, color: primary),
+            ),
           ),
-        ),
         SizedBox(height: 14.h),
         Row(
           children: [
-            _miniStat(LucideIcons.receipt, 'sales'.tr(), '${s.nombreVentes}'),
+            _miniStat(LucideIcons.receipt, 'sales'.tr(), '${s.nombreVentes}',
+                loading: loading),
             SizedBox(width: 10.w),
             _miniStat(
               LucideIcons.creditCard,
@@ -602,6 +638,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ? '—'
                   : '${formatFcfa(s.creditMontant)} (${s.nombreCredits})',
               color: Colors.orange,
+              loading: loading,
             ),
           ],
         ),
@@ -609,7 +646,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _miniStat(IconData icon, String label, String value, {Color? color}) {
+  Widget _miniStat(IconData icon, String label, String value,
+      {Color? color, bool loading = false}) {
     final tint = color ?? AppTheme.theme.colorScheme.primary;
     return Expanded(
       child: Container(
@@ -629,15 +667,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Text(label,
                       style: TextStyle(
                           fontSize: 11.sp, color: context.gb.subtext)),
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(value,
+                  if (loading)
+                    GbTextBone('00 000 FCFA',
                         style: TextStyle(
-                            fontSize: 12.5.sp,
-                            fontWeight: FontWeight.w700,
-                            color: context.gb.text)),
-                  ),
+                            fontSize: 12.5.sp, fontWeight: FontWeight.w700))
+                  else
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(value,
+                          style: TextStyle(
+                              fontSize: 12.5.sp,
+                              fontWeight: FontWeight.w700,
+                              color: context.gb.text)),
+                    ),
                 ],
               ),
             ),
@@ -832,11 +875,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(tiles[i].$2,
-                          style: TextStyle(
-                              fontSize: 17.sp,
-                              fontWeight: FontWeight.w800,
-                              color: context.gb.text)),
+                      if (!c.hasLoaded)
+                        GbTextBone('00',
+                            style: TextStyle(
+                                fontSize: 17.sp, fontWeight: FontWeight.w800))
+                      else
+                        Text(tiles[i].$2,
+                            style: TextStyle(
+                                fontSize: 17.sp,
+                                fontWeight: FontWeight.w800,
+                                color: context.gb.text)),
                       Text(tiles[i].$1,
                           style: TextStyle(
                               fontSize: 11.sp, color: context.gb.subtext)),

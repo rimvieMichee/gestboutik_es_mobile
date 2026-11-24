@@ -15,6 +15,7 @@ import 'package:foodly/widgets/gesboutik/gb_app_bar.dart';
 import 'package:foodly/widgets/gesboutik/gb_colors.dart';
 import 'package:foodly/widgets/gesboutik/gb_empty_state.dart';
 import 'package:foodly/widgets/gesboutik/gb_format.dart';
+import 'package:foodly/views/ui/shimmer/shimmer_widget.dart';
 import 'package:foodly/widgets/gesboutik/gb_skeleton.dart';
 import 'package:foodly/widgets/gesboutik/gb_staggered_item.dart';
 
@@ -46,7 +47,7 @@ class DailyReportScreen extends StatelessWidget {
             Obx(() {
               if (controller.isLoading.value &&
                   controller.report.value == null) {
-                return _loadingBody();
+                return _loadingBody(context);
               }
               final report = controller.report.value;
               if (report == null) {
@@ -67,13 +68,25 @@ class DailyReportScreen extends StatelessWidget {
     );
   }
 
-  Widget _loadingBody() {
+  /// Même mise en page que le rapport : libellés, icônes et cartes réels,
+  /// seules les valeurs et le détail des ventes brillent.
+  Widget _loadingBody(BuildContext context) {
+    final head = TextStyle(fontSize: 15.sp, fontWeight: FontWeight.bold);
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        GbSkeletonCard(child: GbSkeleton.periodResult()),
-        SizedBox(height: 14.h),
-        for (var i = 0; i < 4; i++) ...[
-          GbSkeleton.saleRow(),
+        const _SummaryCard(report: null),
+        SizedBox(height: 20.h),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: SizedBox(
+            width: 170.w,
+            child: GbTextBone('Détail des ventes (00)', style: head),
+          ),
+        ),
+        SizedBox(height: 10.h),
+        for (var i = 0; i < 3; i++) ...[
+          const _SaleCardSkeleton(),
           SizedBox(height: 10.h),
         ],
       ],
@@ -273,6 +286,72 @@ class _ShopBreakdown extends StatelessWidget {
 }
 
 /// Jour / Semaine / Mois / Année / Période libre.
+/// Carte d'une vente en chargement : même structure que [_SaleCard] (numéro,
+/// heure et vendeur, statut, lignes de produits, total).
+class _SaleCardSkeleton extends StatelessWidget {
+  const _SaleCardSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    Widget line() => Padding(
+          padding: EdgeInsets.symmetric(vertical: 4.h),
+          child: Row(
+            children: [
+              GbTextBone('3×  Produit exemple',
+                  style: TextStyle(fontSize: 13.sp)),
+              const Spacer(),
+              GbTextBone('00 000 FCFA', style: TextStyle(fontSize: 13.sp)),
+            ],
+          ),
+        );
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(14.w),
+      decoration: BoxDecoration(
+        color: context.gb.surface,
+        borderRadius: BorderRadius.circular(16.r),
+        border: context.gb.isDark ? Border.all(color: context.gb.border) : null,
+        boxShadow: context.gb.shadow,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GbTextBone('VENTE-000000',
+                        style: TextStyle(
+                            fontSize: 14.sp, fontWeight: FontWeight.w700)),
+                    SizedBox(height: 2.h),
+                    GbTextBone('00:00 · Prénom Nom',
+                        style: TextStyle(fontSize: 11.5.sp)),
+                  ],
+                ),
+              ),
+              ShimmerWidget(
+                child: Container(
+                  width: 60.w,
+                  height: 26.h,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20.r),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Divider(height: 22.h, color: context.gb.border),
+          line(),
+          line(),
+        ],
+      ),
+    );
+  }
+}
+
 class _KindChips extends StatelessWidget {
   final DailyReportController controller;
   const _KindChips({required this.controller});
@@ -434,7 +513,8 @@ class _DateBar extends StatelessWidget {
 
 /// Résumé : chiffre d'affaires, puis ventes, articles, encaissé, crédit.
 class _SummaryCard extends StatelessWidget {
-  final DailyReport report;
+  /// `null` : chargement, les valeurs sont des squelettes.
+  final DailyReport? report;
   const _SummaryCard({required this.report});
 
   @override
@@ -459,15 +539,20 @@ class _SummaryCard extends StatelessWidget {
                       Text(label,
                           style: TextStyle(
                               fontSize: 10.5.sp, color: context.gb.subtext)),
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.centerLeft,
-                        child: Text(value,
+                      if (report == null)
+                        GbTextBone('00 000 FCFA',
                             style: TextStyle(
-                                fontSize: 12.5.sp,
-                                fontWeight: FontWeight.w800,
-                                color: context.gb.text)),
-                      ),
+                                fontSize: 12.5.sp, fontWeight: FontWeight.w800))
+                      else
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(value,
+                              style: TextStyle(
+                                  fontSize: 12.5.sp,
+                                  fontWeight: FontWeight.w800,
+                                  color: context.gb.text)),
+                        ),
                     ],
                   ),
                 ),
@@ -490,30 +575,43 @@ class _SummaryCard extends StatelessWidget {
           Text('revenue'.tr(),
               style: TextStyle(fontSize: 12.sp, color: context.gb.subtext)),
           SizedBox(height: 4.h),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
-            child: Text(
-              formatFcfa(report.chiffreAffaires),
-              style: TextStyle(
-                  fontSize: 26.sp, fontWeight: FontWeight.w800, color: primary),
+          if (report == null)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: SizedBox(
+                width: 190.w,
+                child: GbTextBone('000 000 FCFA',
+                    style: TextStyle(
+                        fontSize: 26.sp, fontWeight: FontWeight.w800)),
+              ),
+            )
+          else
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                formatFcfa(report!.chiffreAffaires),
+                style: TextStyle(
+                    fontSize: 26.sp,
+                    fontWeight: FontWeight.w800,
+                    color: primary),
+              ),
             ),
-          ),
           SizedBox(height: 14.h),
           Row(children: [
-            stat(LucideIcons.receipt, 'sales'.tr(), '${report.nombreVentes}',
-                primary),
+            stat(LucideIcons.receipt, 'sales'.tr(),
+                '${report?.nombreVentes ?? 0}', primary),
             SizedBox(width: 10.w),
             stat(LucideIcons.package, 'items_sold'.tr(),
-                '${report.articlesVendus}', Colors.blue),
+                '${report?.articlesVendus ?? 0}', Colors.blue),
           ]),
           SizedBox(height: 10.h),
           Row(children: [
             stat(LucideIcons.checkCircle2, 'collected_paid'.tr(),
-                formatFcfa(report.encaisse), Colors.green),
+                formatFcfa(report?.encaisse ?? 0), Colors.green),
             SizedBox(width: 10.w),
             stat(LucideIcons.creditCard, 'credit_unsettled'.tr(),
-                formatFcfa(report.creditDu), Colors.orange),
+                formatFcfa(report?.creditDu ?? 0), Colors.orange),
           ]),
         ],
       ),

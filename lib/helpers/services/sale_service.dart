@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:foodly/helpers/remote/api_service.dart';
 import 'package:foodly/helpers/utils/period.dart';
 import 'package:foodly/models/daily_report_model.dart';
@@ -89,6 +90,28 @@ class SaleService {
       },
     );
     return SalesSummary.fromJson(response.data!);
+  }
+
+  /// Totaux de plusieurs périodes en UNE requête (accueil) ; le gestionnaire
+  /// reçoit aussi le nombre d'employés et de produits de la boutique.
+  static Future<({Map<String, SalesSummary> summaries, int employees, int products})>
+      summaries(Map<String, Period> periods) async {
+    final ranges = periods.entries
+        .map((e) => {'key': e.key, 'from': e.value.fromIso, 'to': e.value.toIso})
+        .toList();
+    final response = await APIService.get(
+      path: '/sales/summaries',
+      params: {'ranges': jsonEncode(ranges)},
+    );
+    final data = response.data!;
+    final raw = data['summaries'] as Map<String, dynamic>;
+    final eff = data['effectifs'] as Map<String, dynamic>?;
+    return (
+      summaries: raw.map((k, v) =>
+          MapEntry(k, SalesSummary.fromJson(v as Map<String, dynamic>))),
+      employees: (eff?['employes'] as int?) ?? 0,
+      products: (eff?['produits'] as int?) ?? 0,
+    );
   }
 
   /// Rapport complet d'une période (gestionnaire) : en-tête, totaux, toutes les ventes.

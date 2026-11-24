@@ -57,7 +57,6 @@ class PdfPreviewScreen extends StatelessWidget {
                 child: OutlinedButton.icon(
                   onPressed: () => Printing.layoutPdf(
                       onLayout: (_) async => bytes, name: filename),
-                  icon: const Icon(LucideIcons.printer),
                   label: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Text('print'.tr(),
@@ -79,7 +78,6 @@ class PdfPreviewScreen extends StatelessWidget {
                 child: FilledButton.icon(
                   onPressed: () =>
                       Printing.sharePdf(bytes: bytes, filename: filename),
-                  icon: const Icon(LucideIcons.send),
                   label: Text('send_pdf'.tr(),
                       style: TextStyle(
                           fontSize: 15.sp, fontWeight: FontWeight.w700)),

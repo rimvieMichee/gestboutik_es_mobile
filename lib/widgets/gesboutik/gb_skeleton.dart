@@ -34,6 +34,43 @@ class GbBone extends StatelessWidget {
   }
 }
 
+/// Valeur en cours de chargement : occupe EXACTEMENT la place du texte qu'elle
+/// remplacera (même police, même taille), grâce à un texte invisible de
+/// référence [sample], et brille à sa place. Les libellés, icônes et boutons
+/// de l'écran restent réels : seule la valeur est un squelette.
+class GbTextBone extends StatelessWidget {
+  final String sample;
+  final TextStyle style;
+  final double radius;
+
+  const GbTextBone(this.sample, {super.key, required this.style, this.radius = 6});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Opacity(
+          opacity: 0,
+          child: Text(sample, maxLines: 1, style: style),
+        ),
+        Positioned.fill(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 2.h),
+            child: ShimmerWidget(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(radius.r),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 /// Carte de squelette : la carte (fond, ombre) reste fixe, seul son contenu brille.
 class GbSkeletonCard extends StatelessWidget {
   final Widget child;

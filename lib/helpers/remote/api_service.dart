@@ -131,9 +131,6 @@ class APIService {
         try {
           await _TokenRefresher.refresh(_dioWithoutAuth, _baseUrl);
         } on DioException catch (refreshError) {
-          // Refresh refusé (expiré, compte désactivé) : le 401 ramène à la
-          // connexion avec le message du serveur. Sans réseau : erreur réseau,
-          // sans déconnecter.
           return handler.next(refreshError);
         }
         try {
@@ -145,27 +142,23 @@ class APIService {
         }
       },
     ));
-    //Add interceptor for encryption layer
-    // if (encryptData) {
-    //   logI('Data will be encrypted for POST / PUT / PATCH');
-    //   _dio.interceptors.add(encryptBody());
-    // }
+    // Journal des échanges réseau (debug uniquement). Imprimer chaque réponse
+    // en entier (en-têtes, corps JSON) ralentit nettement l'appli en debug :
+    // par défaut, une ligne par requête et par réponse (statut, durée) ; le
+    // détail complet se demande avec `--dart-define=API_LOG=full`.
     if (kDebugMode) {
-      // Journalisation lisible des requêtes/réponses HTTP en développement uniquement.
-      _dio.interceptors.add(PrettyDioLogger(
-        requestHeader: true,
-        requestBody: true,
-        responseBody: true,
-        error: true,
-        compact: true,
-      ));
-      _dioWithoutAuth.interceptors.add(PrettyDioLogger(
-        requestHeader: true,
-        requestBody: true,
-        responseBody: true,
-        error: true,
-        compact: true,
-      ));
+      const full = String.fromEnvironment('API_LOG') == 'full';
+      for (final dio in [_dio, _dioWithoutAuth]) {
+        dio.interceptors.add(PrettyDioLogger(
+          requestHeader: full,
+          requestBody: full,
+          responseHeader: false,
+          responseBody: full,
+          error: true,
+          compact: true,
+          maxWidth: 100,
+        ));
+      }
     }
   }
 

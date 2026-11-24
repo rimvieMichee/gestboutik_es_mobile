@@ -62,25 +62,25 @@ class DashboardController extends MyController with RealtimeListener {
 
     final now = DateTime.now();
     try {
-      final results = await Future.wait([
-        SaleService.summary(period: Period.day(now)),
-        SaleService.summary(period: Period.month(now)),
-        SaleService.summary(period: Period.year(now)),
-        SaleService.summary(period: period),
-        SaleService.summary(period: Period.week(now)),
-        SaleService.summary(period: Period.week(now).shift(-1)),
-        if (isManager) DashboardService.overview(),
-      ]);
-      today = results[0] as SalesSummary;
-      month = results[1] as SalesSummary;
-      year = results[2] as SalesSummary;
-      periodSummary = results[3] as SalesSummary;
-      week = results[4] as SalesSummary;
-      lastWeek = results[5] as SalesSummary;
+      // Une seule requête pour tous les totaux (au lieu de sept) : c'est elle
+      // qui rend l'accueil rapide, surtout sur un réseau mobile.
+      final r = await SaleService.summaries({
+        'today': Period.day(now),
+        'month': Period.month(now),
+        'year': Period.year(now),
+        'period': period,
+        'week': Period.week(now),
+        'lastWeek': Period.week(now).shift(-1),
+      });
+      today = r.summaries['today']!;
+      month = r.summaries['month']!;
+      year = r.summaries['year']!;
+      periodSummary = r.summaries['period']!;
+      week = r.summaries['week']!;
+      lastWeek = r.summaries['lastWeek']!;
       if (isManager) {
-        final overview = results[6] as ManagerOverview;
-        employeeCount = overview.totalEmployees;
-        productCount = overview.totalProducts;
+        employeeCount = r.employees;
+        productCount = r.products;
       }
       hasLoaded = true;
     } on DioException catch (e) {
