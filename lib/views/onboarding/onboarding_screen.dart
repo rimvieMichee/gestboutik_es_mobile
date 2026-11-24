@@ -8,6 +8,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:foodly/helpers/extensions/string.dart';
 import 'package:foodly/helpers/storage/local_storage.dart';
 import 'package:foodly/helpers/theme/app_theme.dart';
+import 'package:foodly/widgets/gesboutik/exit_guard.dart';
 import 'package:foodly/widgets/gesboutik/gb_colors.dart';
 
 /// Présentation de SELIO au premier lancement : quatre écrans animés qui
@@ -84,7 +85,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   Color get _tint => _tints[0];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      _replay ? _screen(context) : ExitGuard(child: _screen(context));
+
+  Widget _screen(BuildContext context) {
     final c = context.gb;
     final size = MediaQuery.of(context).size;
     final tint = _tint;

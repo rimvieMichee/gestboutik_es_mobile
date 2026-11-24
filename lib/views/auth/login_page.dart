@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodly/widgets/gesboutik/exit_guard.dart';
 import 'package:foodly/widgets/gesboutik/gb_colors.dart';
 import 'package:foodly/helpers/extensions/string.dart';
 import 'package:foodly/helpers/services/biometric_service.dart';
@@ -55,7 +56,9 @@ class _LoginPageState extends State<LoginPage>
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => ExitGuard(child: _page(context));
+
+  Widget _page(BuildContext context) {
     return Scaffold(
       backgroundColor: context.gb.background,
       body: SafeArea(

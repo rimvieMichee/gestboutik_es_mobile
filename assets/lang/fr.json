@@ -391,5 +391,11 @@
   "send_pdf": "Envoyer",
   "print": "Imprimer",
   "ob_m_line1": "Sac de riz 25 kg ×1",
-  "ob_m_line2": "Huile 5 L ×2"
+  "ob_m_line2": "Huile 5 L ×2",
+  "exit_hint_title": "Quitter l'application ?",
+  "exit_hint": "Appuyez encore une fois sur retour pour quitter.",
+  "exit_title": "Quitter SELIO ?",
+  "exit_body": "L'application va se fermer. Vous restez connecté : vous la retrouverez telle que vous l'avez laissée.",
+  "exit_confirm": "Quitter",
+  "exit_stay": "Rester"
 }

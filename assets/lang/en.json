@@ -382,5 +382,11 @@
   "send_pdf": "Send",
   "print": "Print",
   "ob_m_line1": "25 kg rice bag ×1",
-  "ob_m_line2": "Oil 5 L ×2"
+  "ob_m_line2": "Oil 5 L ×2",
+  "exit_hint_title": "Leave the app?",
+  "exit_hint": "Press back once more to exit.",
+  "exit_title": "Quit SELIO?",
+  "exit_body": "The app will close. You stay signed in: you'll find it just as you left it.",
+  "exit_confirm": "Quit",
+  "exit_stay": "Stay"
 }

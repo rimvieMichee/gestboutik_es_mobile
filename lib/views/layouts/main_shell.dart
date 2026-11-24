@@ -8,6 +8,7 @@ import 'package:foodly/views/apps/products/products_screen.dart';
 import 'package:foodly/views/apps/sales/new_sale_screen.dart';
 import 'package:foodly/views/apps/settings/settings_page.dart';
 import 'package:foodly/widgets/bottom_bar/bottom_nav_bar.dart';
+import 'package:foodly/widgets/gesboutik/exit_guard.dart';
 
 /// Coquille principale affichée après connexion.
 /// - Gestionnaire : Accueil / Produits / Vente (bouton central) / Employés / Paramètres
@@ -37,7 +38,8 @@ class MainShell extends StatelessWidget {
       SettingScreen(),
     ];
 
-    return Obx(
+    return ExitGuard(
+        child: Obx(
       () => Scaffold(
         extendBody: true,
         body: IndexedStack(
@@ -50,6 +52,6 @@ class MainShell extends StatelessWidget {
           onTabChange: controller.changeTab,
         ),
       ),
-    );
+    ));
   }
 }

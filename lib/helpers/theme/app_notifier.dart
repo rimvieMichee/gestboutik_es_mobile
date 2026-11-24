@@ -94,6 +94,7 @@ class AppNotifier extends ChangeNotifier {
 
   ///Socket
   late final StompClient _stompClient;
+  bool _stompReady = false;
   bool _isConnected = false;
 
   final receivedTransactionData = RxMap<String, dynamic>({});
@@ -101,6 +102,7 @@ class AppNotifier extends ChangeNotifier {
   //final Map<String, Function(ConnectorsItem)> _wsCallbacks = {};
 
   void initStomp(String caller) {
+    _stompReady = true;
     _stompClient = StompClient(
       config: StompConfig.sockJS(
         url: AppConstant.socketURl,
@@ -285,7 +287,8 @@ class AppNotifier extends ChangeNotifier {
 
   @override
   void dispose() {
-    _stompClient.deactivate();
+    // Le client n'existe que si une connexion a été demandée.
+    if (_stompReady) _stompClient.deactivate();
     super.dispose();
   }
 }
