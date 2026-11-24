@@ -8,6 +8,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:foodly/controller/apps/reports/daily_report_controller.dart';
 import 'package:foodly/helpers/storage/local_storage.dart';
 import 'package:foodly/helpers/theme/app_theme.dart';
+import 'package:foodly/helpers/utils/period.dart';
 import 'package:foodly/models/daily_report_model.dart';
 import 'package:foodly/views/apps/settings/widget/phone_sheet.dart';
 import 'package:foodly/widgets/gesboutik/gb_app_bar.dart';
@@ -38,6 +39,8 @@ class DailyReportScreen extends StatelessWidget {
               _ScopeToggle(controller: controller),
               SizedBox(height: 12.h),
             ],
+            _KindChips(controller: controller),
+            SizedBox(height: 10.h),
             _DateBar(controller: controller),
             SizedBox(height: 14.h),
             Obx(() {
@@ -269,9 +272,95 @@ class _ShopBreakdown extends StatelessWidget {
   }
 }
 
+/// Jour / Semaine / Mois / Année / Période libre.
+class _KindChips extends StatelessWidget {
+  final DailyReportController controller;
+  const _KindChips({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    final primary = AppTheme.theme.colorScheme.primary;
+    final kinds = {
+      PeriodKind.day: 'period_day'.tr(),
+      PeriodKind.week: 'period_week'.tr(),
+      PeriodKind.month: 'period_month'.tr(),
+      PeriodKind.year: 'period_year'.tr(),
+      PeriodKind.custom: 'period_range'.tr(),
+    };
+    return Obx(() {
+      final current = controller.period.value.kind;
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: kinds.entries.map((e) {
+            final selected = current == e.key;
+            return Padding(
+              padding: EdgeInsets.only(right: 8.w),
+              child: ChoiceChip(
+                label: Text(e.value),
+                selected: selected,
+                showCheckmark: false,
+                onSelected: (_) async {
+                  if (e.key == PeriodKind.custom) {
+                    await _DateBar.pickRange(context, controller);
+                  } else {
+                    controller.setKind(e.key);
+                  }
+                },
+                selectedColor: primary,
+                backgroundColor: context.gb.surface,
+                side: BorderSide(color: selected ? primary : context.gb.border),
+                labelStyle: TextStyle(
+                  fontSize: 12.5.sp,
+                  fontWeight: FontWeight.w600,
+                  color: selected ? Colors.white : context.gb.text,
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    });
+  }
+}
+
 class _DateBar extends StatelessWidget {
   final DailyReportController controller;
   const _DateBar({required this.controller});
+
+  static Future<void> pickRange(
+      BuildContext context, DailyReportController controller) async {
+    final cur = controller.period.value;
+    final picked = await showGbRangeSheet(
+      context,
+      title: 'pick_period'.tr(),
+      first: DateTime(2020),
+      last: DateTime.now(),
+      initial: cur.kind == PeriodKind.custom
+          ? DateTimeRange(start: cur.start, end: cur.end)
+          : null,
+    );
+    if (picked != null) {
+      controller.setPeriod(Period.custom(picked.start, picked.end));
+    }
+  }
+
+  /// Le libellé ouvre le bon sélecteur : un jour pour jour/semaine/mois/année
+  /// (la période qui le contient), ou début et fin pour une plage libre.
+  Future<void> _pick(BuildContext context) async {
+    final period = controller.period.value;
+    if (period.kind == PeriodKind.custom) {
+      return pickRange(context, controller);
+    }
+    final picked = await showGbDateSheet(
+      context,
+      title: 'pick_report_day'.tr(),
+      initial: period.start,
+      first: DateTime(2020),
+      last: DateTime.now(),
+    );
+    if (picked != null) controller.setPeriod(Period.of(period.kind, picked));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -311,16 +400,7 @@ class _DateBar extends StatelessWidget {
             Expanded(
               child: InkWell(
                 borderRadius: BorderRadius.circular(10.r),
-                onTap: () async {
-                  final picked = await showGbDateSheet(
-                    context,
-                    title: 'pick_report_day'.tr(),
-                    initial: period.start,
-                    first: DateTime(2020),
-                    last: DateTime.now(),
-                  );
-                  if (picked != null) controller.setDay(picked);
-                },
+                onTap: () => _pick(context),
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.h),
                   child: Row(

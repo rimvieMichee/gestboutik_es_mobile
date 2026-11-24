@@ -1,3 +1,4 @@
+import 'package:foodly/helpers/services/biometric_service.dart';
 import 'package:foodly/helpers/remote/api_service.dart';
 import 'package:foodly/helpers/services/realtime_service.dart';
 import 'package:foodly/helpers/services/shop_badge_service.dart';
@@ -63,6 +64,21 @@ class AuthService {
     await LocalStorage.setShopCount((data['boutiques'] as List).length);
     RealtimeService.instance.disconnect();
     RealtimeService.instance.connect();
+  }
+
+  /// Change le mot de passe du compte connecté. Le coffre de la connexion
+  /// biométrique est mis à jour pour qu'elle continue de fonctionner.
+  static Future<void> changePassword(String current, String next) async {
+    await APIService.post(
+      path: '/auth/change-password',
+      mapData: {
+        'currentPassword': current,
+        'newPassword': next,
+        'refreshToken': LocalStorage.getRefreshToken(),
+      },
+      headers: _jsonHeaders,
+    );
+    await BiometricService.updateStoredPassword(next);
   }
 
   static Future<void> logout() async {

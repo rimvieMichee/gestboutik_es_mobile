@@ -61,6 +61,16 @@ class DailyReportController extends MyController with RealtimeListener {
     return load();
   }
 
+  Future<void> setPeriod(Period p) {
+    period.value = p;
+    return load();
+  }
+
+  /// Passe à un autre type de période (jour, semaine, mois, année) en gardant
+  /// la date de référence ; la plage libre est choisie par l'écran.
+  Future<void> setKind(PeriodKind kind) =>
+      setPeriod(Period.of(kind, period.value.start));
+
   Future<void> shift(int delta) {
     period.value = period.value.shift(delta);
     return load();
@@ -74,9 +84,19 @@ class DailyReportController extends MyController with RealtimeListener {
     isExporting.value = true;
     try {
       final bytes = await buildDailyReportPdf(data, period.value);
-      final d = period.value.start;
-      final name =
-          '${allShops.value ? 'rapport-toutes-boutiques' : 'rapport-ventes'}-${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}.pdf';
+      final p = period.value;
+      String ymd(DateTime d) =>
+          '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+      final scope = allShops.value ? 'rapport-toutes-boutiques' : 'rapport-ventes';
+      final suffix = switch (p.kind) {
+        PeriodKind.day => ymd(p.start),
+        PeriodKind.week => 'semaine-${ymd(p.start)}',
+        PeriodKind.month =>
+          'mois-${p.start.year}-${p.start.month.toString().padLeft(2, '0')}',
+        PeriodKind.year => 'annee-${p.start.year}',
+        PeriodKind.custom => '${ymd(p.start)}_au_${ymd(p.end)}',
+      };
+      final name = '$scope-$suffix.pdf';
       await Printing.sharePdf(bytes: bytes, filename: name);
     } catch (_) {
       appSnackbar(

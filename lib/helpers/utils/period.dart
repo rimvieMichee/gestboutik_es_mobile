@@ -1,7 +1,7 @@
 import 'package:foodly/helpers/storage/local_storage.dart';
 import 'package:intl/intl.dart';
 
-enum PeriodKind { day, month, year, custom }
+enum PeriodKind { day, week, month, year, custom }
 
 /// Période de consultation des ventes, dans le fuseau horaire de l'appareil.
 /// `start` et `end` sont inclus (fin = 23:59:59.999 du dernier jour).
@@ -41,7 +41,7 @@ class Period {
   /// Semaine du lundi au dimanche contenant [d].
   factory Period.week(DateTime d) {
     final monday = DateTime(d.year, d.month, d.day - (d.weekday - 1));
-    return Period._(PeriodKind.custom, _startOfDay(monday),
+    return Period._(PeriodKind.week, _startOfDay(monday),
         _endOfDay(DateTime(monday.year, monday.month, monday.day + 6)));
   }
 
@@ -50,6 +50,8 @@ class Period {
     switch (kind) {
       case PeriodKind.day:
         return Period.day(ref);
+      case PeriodKind.week:
+        return Period.week(ref);
       case PeriodKind.month:
         return Period.month(ref);
       case PeriodKind.year:
@@ -64,6 +66,8 @@ class Period {
     switch (kind) {
       case PeriodKind.day:
         return Period.day(DateTime(start.year, start.month, start.day + delta));
+      case PeriodKind.week:
+        return Period.week(DateTime(start.year, start.month, start.day + 7 * delta));
       case PeriodKind.month:
         return Period.month(DateTime(start.year, start.month + delta, 1));
       case PeriodKind.year:
@@ -89,6 +93,9 @@ class Period {
     switch (kind) {
       case PeriodKind.day:
         return DateFormat('d MMMM yyyy', LocalStorage.dateLocale).format(start);
+      case PeriodKind.week:
+        final f = DateFormat('d MMM', LocalStorage.dateLocale);
+        return '${f.format(start)} – ${f.format(end)} ${end.year}';
       case PeriodKind.month:
         return cap(DateFormat('MMMM yyyy', LocalStorage.dateLocale).format(start));
       case PeriodKind.year:

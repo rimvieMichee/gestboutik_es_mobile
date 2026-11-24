@@ -14,6 +14,7 @@ import 'package:foodly/helpers/theme/app_theme.dart';
 import 'package:foodly/helpers/utils/app_snackbar.dart';
 import 'package:foodly/views/apps/settings/widget/biometric_sheet.dart';
 import 'package:foodly/views/apps/settings/widget/logout_bottom_sheet.dart';
+import 'package:foodly/views/apps/settings/widget/password_sheet.dart';
 import 'package:foodly/views/apps/settings/widget/phone_sheet.dart';
 import 'package:foodly/widgets/gesboutik/gb_app_bar.dart';
 import 'package:foodly/widgets/gesboutik/gb_colors.dart';
@@ -166,6 +167,11 @@ class SettingScreen extends StatelessWidget {
             title: 'my_phone'.tr(),
             subtitle: 'phone_sheet_desc'.tr(),
             onTap: () => showPhoneSheet(context)),
+        _tile(c,
+            icon: LucideIcons.keyRound,
+            title: 'change_password'.tr(),
+            subtitle: 'change_password_hint'.tr(),
+            onTap: () => showPasswordSheet(context)),
       ],
       if (controller.biometricSupported.value) _biometricTile(context, c),
       _tile(c,

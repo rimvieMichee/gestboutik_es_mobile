@@ -660,6 +660,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
           last: DateTime.now(),
         );
         if (picked != null) c.setPeriod(Period.day(picked));
+      case PeriodKind.week:
+        final picked = await showGbDateSheet(
+          context,
+          title: 'pick_day'.tr(),
+          initial: c.period.start,
+          first: DateTime(2020),
+          last: DateTime.now(),
+        );
+        if (picked != null) c.setPeriod(Period.week(picked));
       case PeriodKind.month:
         final picked = await _pickMonth(c.period.start);
         if (picked != null) c.setPeriod(Period.month(picked));

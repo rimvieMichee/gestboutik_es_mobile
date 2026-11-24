@@ -100,7 +100,7 @@ class AppBottomNavBar extends StatelessWidget {
           children: [
             if (centerIndex >= 0)
               Positioned(
-                top: -30,
+                top: -40,
                 left: 0,
                 right: 0,
                 child: Center(
@@ -146,7 +146,7 @@ class AppBottomNavBar extends StatelessWidget {
                       child: Align(
                         alignment: Alignment.bottomCenter,
                         child: Padding(
-                          padding: const EdgeInsets.only(bottom: 6),
+                          padding: const EdgeInsets.only(bottom: 14),
                           child: Text(
                             item.label,
                             style: TextStyle(

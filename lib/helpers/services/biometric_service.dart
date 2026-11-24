@@ -72,6 +72,13 @@ class BiometricService {
     await _storage.write(key: _kPass, value: password);
   }
 
+  /// Après un changement de mot de passe dans l'appli : même identifiant, nouveau secret.
+  static Future<void> updateStoredPassword(String password) async {
+    if (!LocalStorage.getBiometricEnabled()) return;
+    if ((await _storage.read(key: _kUser)) == null) return;
+    await _storage.write(key: _kPass, value: password);
+  }
+
   static Future<void> disable() async {
     await _storage.delete(key: _kUser);
     await _storage.delete(key: _kPass);
