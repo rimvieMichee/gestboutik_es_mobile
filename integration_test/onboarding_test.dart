@@ -23,13 +23,20 @@ void main() {
     app.main();
     await wait(t, 6);
     expect(find.text('Passer'), findsOneWidget);
-    await shot(t, 'o1');
+    await shot(t, 'o1', 2.4);
+    // Glissement à moitié : fond, halos, visuels et textes en parallaxe.
+    final g = await t.startGesture(const Offset(300, 700));
+    await g.moveBy(const Offset(-170, 0));
+    await t.pump(const Duration(milliseconds: 100));
+    await binding.takeScreenshot('o1b-glisse');
+    await g.up();
+    await wait(t, 1.5);
     await t.tap(find.text('Suivant'));
-    await shot(t, 'o2', 1.5);
+    await shot(t, 'o2', 2.4);
     await t.tap(find.text('Suivant'));
-    await shot(t, 'o3', 1.5);
+    await shot(t, 'o3', 2.4);
     await t.tap(find.text('Suivant'));
-    await shot(t, 'o4', 1.5);
+    await shot(t, 'o4', 2.4);
     expect(find.text('Commencer'), findsOneWidget);
     await t.tap(find.text('Commencer'));
     await wait(t, 2.5);

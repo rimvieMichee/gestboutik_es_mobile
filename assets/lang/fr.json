@@ -346,13 +346,13 @@
   "ob_skip": "Passer",
   "ob_next": "Suivant",
   "ob_start": "Commencer",
-  "ob_t1": "Votre boutique, enfin sous contrôle",
+  "ob_t1": "Votre boutique, enfin *sous contrôle*",
   "ob_d1": "Stock, ventes et finances réunis au même endroit, pour savoir où vous en êtes à tout moment, sans cahier ni calculs.",
-  "ob_t2": "Vos équipes vendent, vous suivez en direct",
+  "ob_t2": "Vos équipes vendent, *vous suivez en direct*",
   "ob_d2": "Créez le compte de votre employé en quelques secondes. Chaque vente qu'il enregistre arrive aussitôt chez vous, même si vous n'êtes pas sur place.",
-  "ob_t3": "Alerté avant la rupture de stock",
+  "ob_t3": "Alerté *avant la rupture* de stock",
   "ob_d3": "SELIO vous prévient quand un produit s'épuise. Réapprovisionnez à temps et ne manquez plus jamais une vente.",
-  "ob_t4": "Crédits, rapports et plusieurs boutiques",
+  "ob_t4": "Crédits, rapports et *plusieurs boutiques*",
   "ob_d4": "Suivez ce qui reste à encaisser, partagez le rapport du jour en PDF et passez d'une boutique à l'autre en un geste.",
   "ob_m_sales_today": "Ventes du jour",
   "ob_m_sales": "Ventes",
@@ -389,5 +389,7 @@
   "preview_pdf": "Voir le PDF",
   "pdf_preview": "Aperçu du rapport",
   "send_pdf": "Envoyer",
-  "print": "Imprimer"
+  "print": "Imprimer",
+  "ob_m_line1": "Sac de riz 25 kg ×1",
+  "ob_m_line2": "Huile 5 L ×2"
 }
