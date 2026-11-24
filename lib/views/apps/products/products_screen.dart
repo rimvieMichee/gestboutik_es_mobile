@@ -19,12 +19,8 @@ import 'package:foodly/widgets/gesboutik/gb_search_field.dart';
 import 'package:foodly/widgets/gesboutik/gb_skeleton.dart';
 import 'package:foodly/widgets/gesboutik/gb_staggered_item.dart';
 
-/// Catalogue de la boutique en grille de cartes (image, nom, stock, prix).
-/// Le gestionnaire peut en plus créer, modifier et gérer le stock.
 class ProductsScreen extends StatelessWidget {
-  /// `true` quand l'écran est un onglet de la barre du bas (pas de bouton retour).
   final bool embedded;
-
   const ProductsScreen({super.key, this.embedded = false});
 
   @override

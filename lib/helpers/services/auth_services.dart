@@ -9,14 +9,9 @@ const _jsonHeaders = <String, dynamic>{
   'Accept': 'application/json',
 };
 
-/// Authentification auprès du backend GesBoutik (JWT access + refresh token).
 class AuthService {
   static bool isLoggedIn = false;
 
-  /// Se connecte avec `username`/`password` et persiste la session localement.
-  /// Lève une [DioException] en cas d'échec (identifiants invalides, boutique
-  /// désactivée, etc.) : à charge de l'appelant de l'intercepter et d'afficher
-  /// le message renvoyé par le backend.
   static Future<UserModel> login({
     required String username,
     required String password,
@@ -46,13 +41,10 @@ class AuthService {
     await LocalStorage.setShopCount(user.boutiques.length);
 
     isLoggedIn = true;
-    // Flux en direct : stock, ventes et crédits sans recharger les écrans.
     RealtimeService.instance.connect();
     return user;
   }
 
-  /// Un gestionnaire ouvre une autre de ses boutiques : le serveur remplace les
-  /// jetons de la session par ceux de cette boutique. Lève une [DioException].
   static Future<void> switchBoutique(String boutiqueId) async {
     final response = await APIService.post(
       path: '/auth/switch-boutique',
@@ -69,14 +61,10 @@ class AuthService {
     await LocalStorage.setBoutiqueId(boutique['id'] as String);
     await LocalStorage.setBoutiqueName(boutique['nom'] as String);
     await LocalStorage.setShopCount((data['boutiques'] as List).length);
-    // Le flux en direct repart sur la boutique choisie.
     RealtimeService.instance.disconnect();
     RealtimeService.instance.connect();
   }
 
-  /// Révoque la session côté serveur (best-effort) puis nettoie l'état local.
-  /// Ne lève jamais d'exception : un échec réseau ne doit pas empêcher la
-  /// déconnexion locale de l'utilisateur.
   static Future<void> logout() async {
     ShopBadgeService.reset();
     final refreshToken = LocalStorage.getRefreshToken();

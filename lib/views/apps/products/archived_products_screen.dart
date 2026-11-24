@@ -15,8 +15,6 @@ import 'package:foodly/widgets/gesboutik/gb_format.dart';
 import 'package:foodly/widgets/gesboutik/gb_skeleton.dart';
 import 'package:foodly/widgets/gesboutik/gb_staggered_item.dart';
 
-/// Produits archivés (gestionnaire) : mis de côté, hors de la liste et de la
-/// vente, restaurables à tout moment.
 class ArchivedProductsScreen extends StatelessWidget {
   const ArchivedProductsScreen({super.key});
 

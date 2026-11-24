@@ -38,6 +38,13 @@ class Period {
     return Period._(PeriodKind.custom, _startOfDay(from), _endOfDay(to));
   }
 
+  /// Semaine du lundi au dimanche contenant [d].
+  factory Period.week(DateTime d) {
+    final monday = DateTime(d.year, d.month, d.day - (d.weekday - 1));
+    return Period._(PeriodKind.custom, _startOfDay(monday),
+        _endOfDay(DateTime(monday.year, monday.month, monday.day + 6)));
+  }
+
   factory Period.of(PeriodKind kind, [DateTime? reference]) {
     final ref = reference ?? DateTime.now();
     switch (kind) {

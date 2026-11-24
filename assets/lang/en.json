@@ -362,5 +362,6 @@
   "ob_m_pdf": "Daily report (PDF)",
   "ob_m_pdf_sub": "Share by WhatsApp or e-mail",
   "ob_m_shops": "My shops",
-  "ob_m_shops_sub": "Each shop's figures, one tap to switch"
+  "ob_m_shops_sub": "Each shop's figures, one tap to switch",
+  "week_revenue": "This week's revenue"
 }

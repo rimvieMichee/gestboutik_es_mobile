@@ -4,24 +4,15 @@ final DateFormat dateFormatter = DateFormat('dd/MM/yyyy');
 final DateFormat timeFormatter = DateFormat('jms');
 
 class AppConstant {
-  // Backend GesBoutik (NestJS), déployé sur Render. Accessible depuis n'importe
-  // quel réseau (plus besoin de l'IP locale de la machine de dev).
-  // `--dart-define=API_BASE=http://127.0.0.1:3999` pour viser un serveur local.
   static const String baseAPI = String.fromEnvironment('API_BASE',
       defaultValue: 'https://gestboutik-es-back.onrender.com');
   static const String baseURl = '$baseAPI/api';
-
   static const String baseURl_ = '$baseAPI/api/public/v1/';
-
-  // static const String baseURl1 = 'https://api.link2digit.com/link2digit/api/v1/';
-
   static const String baseFlagURl =
       'https://cdn.kcak11.com/CountryFlags/countries';
   // static const String baseV2URl = '$baseAPI/api/v2/';
   static const String socketURl = '$baseAPI/websocket/connect';
   static const String enumerations = 'enumerations';
-  // static const String stripePublishableKey =
-  //     'pk_test_51Q30fsP5Fm4LPu59MokaqiPir33BS5zG9OR1byiY5GMAmIS9AEaf3KlDErVbol0Z1x8znM45K0fwvlXsYwv9kfuP00HMEgwGKy';
   static const String pools = 'pools';
   static const String involvedPools = 'involved-pools';
   static const String activesPools = 'actives-pools';
@@ -44,7 +35,6 @@ class AppConstant {
   static const String wallets = 'wallets';
   static const String goals = 'goals';
   static const String sendersWallets = 'senders-wallets';
-
   static const String transfer = 'transfer';
   static const String pendingInvitedPools = 'pending-invited-pools';
   static const String invitedPools = 'invited-pools';

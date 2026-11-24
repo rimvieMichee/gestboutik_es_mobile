@@ -9,8 +9,6 @@ import 'package:foodly/views/apps/sales/sale_confirmation_screen.dart';
 import 'package:foodly/widgets/gesboutik/gb_colors.dart';
 import 'package:foodly/widgets/gesboutik/gb_format.dart';
 
-/// Détail de la vente : produits choisis (quantités modifiables), total, option
-/// « vente à crédit » avec le nom de l'emprunteur, et bouton d'enregistrement.
 class CartBottomSheet extends StatefulWidget {
   final NewSaleController controller;
 
@@ -50,14 +48,12 @@ class _CartBottomSheetState extends State<CartBottomSheet> {
       clientNom: _credit ? name : null,
     );
     if (sale == null) {
-      _submitted =
-          false; // échec : le panier est intact, on reste sur la feuille
+      _submitted = false;
       return;
     }
     if (!mounted) return;
 
-    Navigator.of(context).pop(); // ferme le bottom sheet
-    // Get.to (et non Get.off) : l'onglet Vente reste en dessous de la confirmation.
+    Navigator.of(context).pop();
     Get.to(() => SaleConfirmationScreen(sale: sale));
   }
 

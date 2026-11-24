@@ -18,8 +18,6 @@ import 'package:foodly/widgets/gesboutik/gb_search_field.dart';
 import 'package:foodly/widgets/gesboutik/gb_skeleton.dart';
 import 'package:foodly/widgets/gesboutik/gb_staggered_item.dart';
 
-/// Onglet « Employés » du gestionnaire : liste, création de compte,
-/// activation/désactivation et changement de mot de passe.
 class EmployeesScreen extends StatelessWidget {
   const EmployeesScreen({super.key});
 

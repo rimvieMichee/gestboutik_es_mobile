@@ -11,9 +11,6 @@ import 'package:foodly/helpers/utils/app_snackbar.dart';
 import 'package:foodly/models/shop_model.dart';
 import 'package:foodly/widgets/gesboutik/gb_colors.dart';
 
-/// Écran de passage d'une boutique à l'autre. Il remplace tout l'empilement
-/// d'écrans : les contrôleurs de l'ancienne boutique sont ainsi détruits, puis
-/// l'accueil de la nouvelle repart de zéro (données, flux en direct, stock).
 class ShopSwitchScreen extends StatefulWidget {
   final ShopModel shop;
   const ShopSwitchScreen({super.key, required this.shop});
@@ -33,7 +30,6 @@ class _ShopSwitchScreenState extends State<ShopSwitchScreen> {
     final started = DateTime.now();
     try {
       await AuthService.switchBoutique(widget.shop.id);
-      // Une courte pause pour que le changement se voie, même en réseau rapide.
       final elapsed = DateTime.now().difference(started);
       if (elapsed < const Duration(milliseconds: 900)) {
         await Future<void>.delayed(const Duration(milliseconds: 900) - elapsed);
@@ -45,8 +41,6 @@ class _ShopSwitchScreenState extends State<ShopSwitchScreen> {
       );
     } on DioException catch (e) {
       letMeHandleAllErrors(e);
-      // Les jetons n'ont pas changé : on revient où l'on était (sauf si la
-      // session a été fermée par la gestion d'erreur, qui ouvre la connexion).
       if (AuthService.isLoggedIn) {
         Get.offAllNamed('/dashboard', arguments: {'tab': 0});
       }

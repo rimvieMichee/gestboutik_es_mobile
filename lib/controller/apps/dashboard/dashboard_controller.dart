@@ -22,6 +22,10 @@ class DashboardController extends MyController with RealtimeListener {
   SalesSummary month = const SalesSummary();
   SalesSummary year = const SalesSummary();
 
+  /// Semaine en cours (lundi à dimanche) et la précédente, pour la comparaison.
+  SalesSummary week = const SalesSummary();
+  SalesSummary lastWeek = const SalesSummary();
+
   /// Période consultée et ses totaux.
   Period period = Period.day(DateTime.now());
   SalesSummary periodSummary = const SalesSummary();
@@ -63,14 +67,18 @@ class DashboardController extends MyController with RealtimeListener {
         SaleService.summary(period: Period.month(now)),
         SaleService.summary(period: Period.year(now)),
         SaleService.summary(period: period),
+        SaleService.summary(period: Period.week(now)),
+        SaleService.summary(period: Period.week(now).shift(-1)),
         if (isManager) DashboardService.overview(),
       ]);
       today = results[0] as SalesSummary;
       month = results[1] as SalesSummary;
       year = results[2] as SalesSummary;
       periodSummary = results[3] as SalesSummary;
+      week = results[4] as SalesSummary;
+      lastWeek = results[5] as SalesSummary;
       if (isManager) {
-        final overview = results[4] as ManagerOverview;
+        final overview = results[6] as ManagerOverview;
         employeeCount = overview.totalEmployees;
         productCount = overview.totalProducts;
       }

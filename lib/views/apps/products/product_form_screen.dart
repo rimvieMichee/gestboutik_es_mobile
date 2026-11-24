@@ -14,8 +14,6 @@ import 'package:foodly/models/product_model.dart';
 import 'package:foodly/widgets/gesboutik/gb_app_bar.dart';
 import 'package:foodly/widgets/gesboutik/gb_format.dart';
 
-/// Création / modification d'un produit par le gestionnaire.
-/// Passer un [ProductModel] en argument de route pour modifier.
 class ProductFormScreen extends StatefulWidget {
   const ProductFormScreen({super.key});
 

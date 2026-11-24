@@ -16,9 +16,6 @@ import 'package:foodly/widgets/gesboutik/gb_search_field.dart';
 import 'package:foodly/widgets/gesboutik/gb_skeleton.dart';
 import 'package:foodly/widgets/gesboutik/gb_staggered_item.dart';
 
-/// Onglet « Vente » de l'employé : le catalogue en cartes avec un bouton « + »,
-/// une barre de panier en bas (quantité et total) qui ouvre le détail de la
-/// vente, où se trouve le bouton « Enregistrer la vente ».
 class NewSaleScreen extends StatefulWidget {
   const NewSaleScreen({super.key});
 

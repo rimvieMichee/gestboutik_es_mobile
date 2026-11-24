@@ -49,8 +49,6 @@ class _SaleConfirmationScreenState extends State<SaleConfirmationScreen>
     super.dispose();
   }
 
-  /// Referme la confirmation et revient à l'onglet voulu (1 = Vente, 0 = Accueil),
-  /// en rafraîchissant le stock et les chiffres modifiés par la vente.
   void _backToShell({required int tab}) {
     Navigator.of(context).pop();
     if (Get.isRegistered<MainShellController>()) {
@@ -192,7 +190,8 @@ class _SaleConfirmationScreenState extends State<SaleConfirmationScreen>
                       width: double.infinity,
                       height: 52.h,
                       child: ElevatedButton(
-                        onPressed: () => _backToShell(tab: MainShellController.saleTab),
+                        onPressed: () =>
+                            _backToShell(tab: MainShellController.saleTab),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppTheme.theme.colorScheme.primary,
                           shape: RoundedRectangleBorder(

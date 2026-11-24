@@ -62,8 +62,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             LocalStorage.getBoutiqueName()!,
         ].join(' · '),
         showBack: false,
-        // Plusieurs boutiques : la pastille de la boutique ouverte remplace l'avatar
-        // et ouvre le sélecteur.
         actions: [
           LocalStorage.isMultiShop
               ? _buildShopChip()
@@ -78,6 +76,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
                 _sliver(_buildTotals(controller), top: 20),
+                if (controller.hasLoaded)
+                  _sliver(_buildWeekCard(controller), top: 12),
                 if (controller.hasLoaded && controller.creditDu > 0)
                   _sliver(_buildCreditCard(controller), top: 14),
                 _sliver(_buildPeriodSection(controller), top: 26),
@@ -104,7 +104,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  /// Accès au rapport consolidé de toutes les boutiques.
   Widget _buildAllShopsCard() {
     final primary = AppTheme.theme.colorScheme.primary;
     return Material(
@@ -257,6 +256,87 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ],
           ),
       ],
+    );
+  }
+
+  // ------------------------------------------------------ semaine en cours
+
+  Widget _buildWeekCard(DashboardController c) {
+    final primary = AppTheme.theme.colorScheme.primary;
+    final p = Period.week(DateTime.now());
+    final f = DateFormat('d MMM', LocalStorage.dateLocale);
+    final range = '${f.format(p.start)} – ${f.format(p.end)}';
+    final now = c.week.chiffreAffaires;
+    final before = c.lastWeek.chiffreAffaires;
+    // Variation par rapport à la semaine dernière (absente s'il n'y avait rien).
+    final delta = before > 0 ? (now - before) / before * 100 : null;
+    final up = delta != null && delta >= 0;
+    final chipColor = up ? const Color(0xff16A34A) : const Color(0xffDC2626);
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(16.w),
+      decoration: _cardDecoration,
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(10.w),
+            decoration: BoxDecoration(
+              color: primary.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(13.r),
+            ),
+            child: Icon(LucideIcons.calendarClock, size: 22.sp, color: primary),
+          ),
+          SizedBox(width: 14.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('week_revenue'.tr(),
+                    style: TextStyle(
+                        fontSize: 12.5.sp, color: context.gb.subtext)),
+                SizedBox(height: 3.h),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(formatFcfa(now),
+                      style: TextStyle(
+                          fontSize: 22.sp,
+                          fontWeight: FontWeight.w800,
+                          color: context.gb.text)),
+                ),
+                SizedBox(height: 3.h),
+                Text(
+                  '$range · ${(c.week.nombreVentes > 1 ? 'n_sales_other' : 'n_sales_one').trp({
+                        'n': '${c.week.nombreVentes}'
+                      })}',
+                  style: TextStyle(fontSize: 11.5.sp, color: context.gb.subtext),
+                ),
+              ],
+            ),
+          ),
+          if (delta != null)
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 5.h),
+              decoration: BoxDecoration(
+                color: chipColor.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(20.r),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(up ? LucideIcons.trendingUp : LucideIcons.trendingDown,
+                      size: 14.sp, color: chipColor),
+                  SizedBox(width: 4.w),
+                  Text('${up ? '+' : ''}${delta.round()} %',
+                      style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w800,
+                          color: chipColor)),
+                ],
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -765,16 +845,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // -------------------------------------------------------------- raccourcis
 
   Widget _buildQuickActions() {
-    // Le catalogue vit dans l'onglet Vente (employé et gestionnaire) ou Produits
-    // (gestionnaire), l'historique des ventes dans les Paramètres : seul le
-    // raccourci vers l'onglet Vente reste ici.
     final actions = [
       _QuickAction(
-          icon: LucideIcons.plusCircle,
-          label: 'new_sale'.tr(),
-          subtitle: 'new_sale_desc'.tr(),
-          onTap: () => Get.find<MainShellController>().changeTab(MainShellController.saleTab),
-        ),
+        icon: LucideIcons.plusCircle,
+        label: 'new_sale'.tr(),
+        subtitle: 'new_sale_desc'.tr(),
+        onTap: () => Get.find<MainShellController>()
+            .changeTab(MainShellController.saleTab),
+      ),
     ];
     if (actions.isEmpty) {
       return const SliverToBoxAdapter(child: SizedBox.shrink());

@@ -17,8 +17,6 @@ import 'package:foodly/widgets/gesboutik/gb_format.dart';
 import 'package:foodly/widgets/gesboutik/gb_skeleton.dart';
 import 'package:foodly/widgets/gesboutik/gb_staggered_item.dart';
 
-/// Rapport journalier (gestionnaire) : choix du jour, résumé complet des
-/// ventes, liste de tous les produits vendus (payé ou crédit) et export PDF.
 class DailyReportScreen extends StatelessWidget {
   const DailyReportScreen({super.key});
 
@@ -161,8 +159,6 @@ class DailyReportScreen extends StatelessWidget {
   }
 }
 
-/// Barre « ‹ date › » : flèches et sélecteur de jour.
-/// Choix du périmètre du rapport : la boutique ouverte ou toutes les boutiques.
 class _ScopeToggle extends StatelessWidget {
   final DailyReportController controller;
   const _ScopeToggle({required this.controller});

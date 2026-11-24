@@ -10,9 +10,6 @@ import 'package:foodly/helpers/storage/local_storage.dart';
 import 'package:foodly/helpers/theme/app_theme.dart';
 import 'package:foodly/widgets/gesboutik/gb_colors.dart';
 
-/// Présentation de SELIO au premier lancement : quatre écrans qui montrent
-/// ce que l'application apporte au commerçant. Rejouable depuis les Paramètres
-/// (`Get.toNamed('/onboarding', arguments: {'replay': true})`).
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -203,7 +200,6 @@ class _Slide extends StatelessWidget {
             ),
           ),
           SizedBox(height: 24.h),
-          // Hauteur fixe : l'illustration ne saute pas d'un écran à l'autre.
           SizedBox(
             height: 168.h,
             child: Column(
@@ -245,7 +241,7 @@ BoxDecoration _card(BuildContext context, {Color? color, double radius = 20}) {
   );
 }
 
-/// 1 · Tout est au même endroit : chiffre du jour, ventes, crédits.
+//========================== chiffre du jour, ventes, crédits.
 class _ControlArt extends StatelessWidget {
   const _ControlArt();
 
@@ -253,7 +249,8 @@ class _ControlArt extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.gb;
     final primary = AppTheme.theme.colorScheme.primary;
-    Widget tile(IconData icon, String label, String value, Color col) => Expanded(
+    Widget tile(IconData icon, String label, String value, Color col) =>
+        Expanded(
           child: Container(
             padding: EdgeInsets.all(12.w),
             decoration: _card(context, radius: 18),
@@ -376,8 +373,8 @@ class _TeamArtState extends State<_TeamArt>
                   height: 40.h,
                   child: AnimatedBuilder(
                     animation: _ctl,
-                    builder: (_, __) => CustomPaint(
-                        painter: _FlowPainter(_ctl.value, primary)),
+                    builder: (_, __) =>
+                        CustomPaint(painter: _FlowPainter(_ctl.value, primary)),
                   ),
                 ),
               ),
@@ -450,8 +447,8 @@ class _FlowPainter extends CustomPainter {
     for (var i = 0; i < 3; i++) {
       final p = ((t + i / 3) % 1.0);
       final x = 8 + (size.width - 16) * p;
-      canvas.drawCircle(
-          Offset(x, y), 6, Paint()..color = color.withOpacity(math.sin(p * math.pi)));
+      canvas.drawCircle(Offset(x, y), 6,
+          Paint()..color = color.withOpacity(math.sin(p * math.pi)));
     }
   }
 
@@ -606,9 +603,10 @@ class _MoreArt extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          row(LucideIcons.creditCard, 'ob_m_credit'.tr(), 'ob_m_credit_sub'.tr(),
-              const Color(0xffD97706)),
-          row(LucideIcons.fileText, 'ob_m_pdf'.tr(), 'ob_m_pdf_sub'.tr(), primary),
+          row(LucideIcons.creditCard, 'ob_m_credit'.tr(),
+              'ob_m_credit_sub'.tr(), const Color(0xffD97706)),
+          row(LucideIcons.fileText, 'ob_m_pdf'.tr(), 'ob_m_pdf_sub'.tr(),
+              primary),
           row(LucideIcons.store, 'ob_m_shops'.tr(), 'ob_m_shops_sub'.tr(),
               const Color(0xff3B5BDB)),
         ],

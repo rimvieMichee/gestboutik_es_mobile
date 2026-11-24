@@ -18,8 +18,6 @@ import 'package:foodly/widgets/gesboutik/gb_skeleton.dart';
 import 'package:foodly/widgets/gesboutik/gb_format.dart';
 import 'package:foodly/widgets/gesboutik/gb_staggered_item.dart';
 
-/// Fiche d'un employé (gestionnaire) : identité, activité, dernières ventes
-/// et actions (mot de passe, activation).
 class EmployeeDetailScreen extends StatelessWidget {
   const EmployeeDetailScreen({super.key});
 

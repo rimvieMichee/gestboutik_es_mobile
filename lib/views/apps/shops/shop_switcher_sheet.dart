@@ -13,9 +13,6 @@ import 'package:foodly/widgets/gesboutik/gb_format.dart';
 import 'package:foodly/widgets/gesboutik/gb_sheets.dart';
 import 'package:foodly/widgets/gesboutik/gb_skeleton.dart';
 
-/// Sélecteur de boutique d'un gestionnaire qui en gère plusieurs : chaque
-/// boutique montre ses ventes du jour et ses crédits à encaisser, pour choisir
-/// d'un coup d'œil sans ouvrir chacune.
 Future<void> showShopSwitcher(
   BuildContext context, {
   Future<List<ShopModel>> Function()? loader,
